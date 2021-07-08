@@ -28,7 +28,7 @@
   },
   "extra": {
     "typo3/cms": {
-      "extension-key": "z7_critial_css"
+      "extension-key": "z7_critical_css"
     }
   }
 }
