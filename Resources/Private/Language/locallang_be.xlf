@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages">
+		<header/>
+		<body>
+			<trans-unit id="flushCache.title">
+				<source>Flush critical css styles</source>
+			</trans-unit>
+			<trans-unit id="flushCache.description">
+				<source>Flush all calulated critical styles on all pages</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
