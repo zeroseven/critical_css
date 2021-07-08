@@ -24,7 +24,7 @@ call_user_func(static function (string $table) {
         ],
         'critical_css_actual' => [
             'exclude' => true,
-            'label' => 'Process',
+            'label' => 'Actual',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'check',
