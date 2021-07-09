@@ -10,21 +10,28 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class PageRendererHook
 {
-    protected function isFrontend(): bool
+    protected function needCriticalCss(): bool
     {
-        return isset($GLOBALS['TYPO3_REQUEST']) && $GLOBALS['TYPO3_REQUEST'] instanceof ServerRequestInterface && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend();
+        return
+
+            // Check for necessary information and context
+            isset($GLOBALS['TSFE'], $GLOBALS['TYPO3_REQUEST'])
+            && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController
+            && $GLOBALS['TYPO3_REQUEST'] instanceof ServerRequestInterface
+
+            // Check application request
+            && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
+
+            // Check for default page type
+            && (int)$GLOBALS['TSFE']->type === 0;
     }
 
     protected function getCriticalCss(): ?string
     {
-        if (
-            $GLOBALS['TSFE'] && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController
-            && ($row = $GLOBALS['TSFE']->page)
-            && isset($row['critical_css_disabled'], $row['critical_css'])
-            && empty($row['critical_css_disabled'])
-            && !empty($criticalCss = $row['critical_css'])
-        ) {
-            return $criticalCss;
+        $row = (array)$GLOBALS['TSFE']->page;
+
+        if (isset($row['critical_css_disabled'], $row['critical_css']) && empty($row['critical_css_disabled'])) {
+            return $row['critical_css'] ?: null;
         }
 
         return null;
@@ -32,7 +39,7 @@ class PageRendererHook
 
     public function addCriticalCss(array &$params): void
     {
-        if ($this->isFrontend() && $criticalCss = $this->getCriticalCss()) {
+        if ($this->needCriticalCss() && $criticalCss = $this->getCriticalCss()) {
 
             // Move all styles to the footer
             $params['footerData'][] = $params['cssFiles'];

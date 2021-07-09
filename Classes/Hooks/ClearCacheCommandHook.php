@@ -10,7 +10,6 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 
 class ClearCacheCommandHook
 {
-
     protected function getAffectedPage(array $params): int
     {
         if ($params['uid_page'] ?? null) {
