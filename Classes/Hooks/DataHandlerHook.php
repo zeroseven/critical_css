@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use Zeroseven\CriticalCss\Model\Styles;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 
-class ClearCacheCommandHook
+class DataHandlerHook
 {
     protected function getAffectedPage(array $params): int
     {
