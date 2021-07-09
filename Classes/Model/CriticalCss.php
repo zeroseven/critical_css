@@ -57,9 +57,10 @@ class CriticalCss
         return $this->uid;
     }
 
-    public function setUid(int $uid): void
+    public function setUid(int $uid): self
     {
         $this->uid = $uid;
+        return $this;
     }
 
     public function getLanguage(): int
@@ -67,9 +68,10 @@ class CriticalCss
         return $this->language;
     }
 
-    public function setLanguage(int $language): void
+    public function setLanguage(int $language): self
     {
         $this->language = $language;
+        return $this;
     }
 
     public function getCss(): string
@@ -77,9 +79,10 @@ class CriticalCss
         return $this->css;
     }
 
-    public function setCss(string $css): void
+    public function setCss(string $css): self
     {
         $this->css = $css;
+        return $this;
     }
 
     public function isDisabled(): bool
@@ -87,9 +90,10 @@ class CriticalCss
         return $this->disabled;
     }
 
-    public function setDisabled(bool $disabled): void
+    public function setDisabled(bool $disabled): self
     {
         $this->disabled = $disabled;
+        return $this;
     }
 
     public function isEnabled(): bool
@@ -97,9 +101,10 @@ class CriticalCss
         return !$this->disabled;
     }
 
-    public function setEnabled(bool $enabled): void
+    public function setEnabled(bool $enabled): self
     {
         $this->disabled = !$enabled;
+        return $this;
     }
 
     public function getStatus(): int
@@ -107,8 +112,9 @@ class CriticalCss
         return $this->status;
     }
 
-    public function setStatus(int $status): void
+    public function setStatus(int $status): self
     {
         $this->status = $status;
+        return $this;
     }
 }
