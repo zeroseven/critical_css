@@ -30,17 +30,17 @@ class DatabaseService
         $queryBuilder->execute();
     }
 
-    public static function updateStatus(CriticalCss $criticalCss, int $status = null): void
+    public static function updateStatus(CriticalCss $criticalCss): void
     {
         $queryBuilder = self::getQueryBuilder();
 
         $queryBuilder->update(self::TABLE)
-            ->set('critical_css_status', $status ?? $criticalCss->getStatus())
+            ->set('critical_css_status', $criticalCss->getStatus())
             ->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()))
             ->execute();
     }
 
-    public static function clearAll(): void
+    public static function flushAll(): void
     {
         self::getQueryBuilder()
             ->update(self::TABLE)

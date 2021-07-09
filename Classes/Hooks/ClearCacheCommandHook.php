@@ -25,10 +25,19 @@ class ClearCacheCommandHook
 
     public function clearCachePostProc(array &$params): void
     {
+        // It's the "flush frontend cache" command. Ignore!
+        if ($params['cacheCmd'] === 'pages') {
+            return;
+        }
+
+        // A specific page should be flushed – ok!
         if ($pageUid = $this->getAffectedPage($params)) {
-            DatabaseService::updateStatus(CriticalCss::makeInstance(['uid' => $pageUid]), 0);
-        } else {
-            DatabaseService::clearAll();
+            DatabaseService::updateStatus(CriticalCss::makeInstance()->setStatus(0)->setUid($pageUid));
+        }
+
+        // Reset all critical styles
+        if ($params['cacheCmd'] === ClearCacheToolbarItemHook::CACHE_CMD || $params['cacheCmd'] === 'all') {
+            DatabaseService::flushAll();
         }
     }
 }
