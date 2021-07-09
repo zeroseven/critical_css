@@ -15,23 +15,27 @@ class CriticalCss
 
     public CONST STATUS_ACTUAL = 2;
 
-    protected string $css = '';
+    protected int $uid;
 
-    protected bool $disabled = true;
+    protected int $language;
 
-    protected int $status = 0;
+    protected string $css;
+
+    protected bool $disabled;
+
+    protected int $status;
 
     public function __construct(array $row = null)
     {
-        if ($row === null && $GLOBALS['TSFE'] && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
+        if (empty($row) && $GLOBALS['TSFE'] && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
             $row = (array)$GLOBALS['TSFE']->page;
         }
 
-        if (isset($row['critical_css'], $row['critical_css_disabled'], $row['critical_css_status'])) {
-            $this->setCss((string)$row['critical_css']);
-            $this->setDisabled((bool)$row['critical_css_disabled']);
-            $this->setStatus((int)$row['critical_css_status']);
-        }
+        $this->uid = (int)($row['uid'] ?: 0);
+        $this->language = (int)($row['sys_language_uid'] ?: 0);
+        $this->css = (string)($row['critical_css'] ?: '');
+        $this->disabled = (bool)($row['critical_css_disabled'] ?: false);
+        $this->status = (int)($row['critical_css_status'] ?: 0);
     }
 
     public static function makeInstance(array $row = null): self
@@ -46,6 +50,26 @@ class CriticalCss
             'critical_css_disabled' => $this->getDisabled(),
             'critical_css_status' => $this->getStatus()
         ];
+    }
+
+    public function getUid(): int
+    {
+        return $this->uid;
+    }
+
+    public function setUid(int $uid): void
+    {
+        $this->uid = $uid;
+    }
+
+    public function getLanguage(): int
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(int $language): void
+    {
+        $this->language = $language;
     }
 
     public function getCss(): string
