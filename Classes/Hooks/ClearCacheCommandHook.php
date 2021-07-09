@@ -29,7 +29,7 @@ class ClearCacheCommandHook
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('pages')
             ->update('pages')
-            ->set('critical_css_actual', 0);
+            ->set('critical_css_status', 0);
 
         // Limit to affected page
         if ($pageUid = $this->getAffectedPage($params)) {

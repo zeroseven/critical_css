@@ -22,20 +22,17 @@ call_user_func(static function (string $table) {
                 'default' => '0'
             ]
         ],
-        'critical_css_actual' => [
+        'critical_css_status' => [
             'exclude' => true,
-            'label' => 'Actual',
+            'label' => 'Status',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
-                'type' => 'check',
-                'renderType' => 'checkboxLabeledToggle',
+                'type' => 'select',
+                'renderType' => 'selectSingle',
                 'items' => [
-                    [
-                        0 => '',
-                        1 => '',
-                        'labelChecked' => 'Updated',
-                        'labelUnchecked' => 'in process',
-                    ],
+                    ['Expired', 0, 'overlay-endtime'],
+                    ['Pending', 1, 'overlay-scheduled'],
+                    ['Actual', 2, 'overlay-approved'],
                 ],
                 'readOnly' => true,
                 'default' => '0'
@@ -53,7 +50,7 @@ call_user_func(static function (string $table) {
         ]
     ]);
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, critical_css_actual, --linebreak--, critical_css');
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, critical_css_status, --linebreak--, critical_css');
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes($table, '--palette--;Critical css;critical_css', '', 'after:tsconfig_includes');
 }, 'pages');
