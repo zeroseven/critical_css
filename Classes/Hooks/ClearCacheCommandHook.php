@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Zeroseven\CriticalCss\Hooks;
 
 use TYPO3\CMS\Core\Utility\MathUtility;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Styles;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 
 class ClearCacheCommandHook
@@ -25,18 +25,20 @@ class ClearCacheCommandHook
 
     public function clearCachePostProc(array &$params): void
     {
+        $cacheCmd = $params['cacheCmd'];
+
         // It's the "flush frontend cache" command. Ignore!
-        if ($params['cacheCmd'] === 'pages') {
+        if ($cacheCmd === 'pages' || $cacheCmd === 'lowlevel') {
             return;
         }
 
-        // A specific page should be flushed – ok!
+        // A specific page should be flushed. Maybe something was changed in the content.
         if ($pageUid = $this->getAffectedPage($params)) {
-            DatabaseService::updateStatus(CriticalCss::makeInstance()->setStatus(0)->setUid($pageUid));
+            DatabaseService::updateStatus(Styles::makeInstance()->setStatus(0)->setUid($pageUid));
         }
 
-        // Reset all critical styles
-        if ($params['cacheCmd'] === ClearCacheToolbarItemHook::CACHE_CMD || $params['cacheCmd'] === 'all') {
+        // Reset all critical styles.
+        if ($cacheCmd === ClearCacheToolbarItemHook::CACHE_CMD || $cacheCmd === 'all') {
             DatabaseService::flushAll();
         }
     }

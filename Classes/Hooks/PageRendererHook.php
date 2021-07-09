@@ -6,15 +6,15 @@ namespace Zeroseven\CriticalCss\Hooks;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ApplicationType;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Styles;
 
 class PageRendererHook
 {
-    protected CriticalCss $criticalCss;
+    protected Styles $criticalCss;
 
     public function __construct()
     {
-        $this->criticalCss = CriticalCss::makeInstance();
+        $this->criticalCss = Styles::makeInstance();
     }
 
     protected function needCriticalCss(): bool
@@ -35,15 +35,15 @@ class PageRendererHook
 
     protected function handleCriticalCss(): ?string
     {
-        if ($this->criticalCss->getStatus() === CriticalCss::STATUS_ACTUAL) {
+        if ($this->criticalCss->getStatus() === Styles::STATUS_ACTUAL) {
             return $this->criticalCss->getCss();
         }
 
-        if($this->criticalCss->getStatus() === CriticalCss::STATUS_PENDING) {
+        if($this->criticalCss->getStatus() === Styles::STATUS_PENDING) {
             return null;
         }
 
-        if($this->criticalCss->getStatus() === CriticalCss::STATUS_EXPIRED) {
+        if($this->criticalCss->getStatus() === Styles::STATUS_EXPIRED) {
             // Call styles and set status to 1
             return null;
         }

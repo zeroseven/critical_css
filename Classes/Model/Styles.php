@@ -7,7 +7,7 @@ namespace Zeroseven\CriticalCss\Model;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class CriticalCss
+class Styles
 {
     public CONST STATUS_EXPIRED = 0;
 

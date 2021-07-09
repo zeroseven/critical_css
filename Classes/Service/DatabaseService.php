@@ -7,7 +7,7 @@ namespace Zeroseven\CriticalCss\Service;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Styles;
 
 class DatabaseService
 {
@@ -18,7 +18,7 @@ class DatabaseService
         return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
     }
 
-    public static function update(CriticalCss $criticalCss): void
+    public static function update(Styles $criticalCss): void
     {
         $queryBuilder = self::getQueryBuilder();
         $queryBuilder->update(self::TABLE)->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
@@ -30,7 +30,7 @@ class DatabaseService
         $queryBuilder->execute();
     }
 
-    public static function updateStatus(CriticalCss $criticalCss): void
+    public static function updateStatus(Styles $criticalCss): void
     {
         $queryBuilder = self::getQueryBuilder();
 
