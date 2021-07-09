@@ -6,40 +6,52 @@ namespace Zeroseven\CriticalCss\Hooks;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ApplicationType;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use Zeroseven\CriticalCss\Model\CriticalCss;
 
 class PageRendererHook
 {
+    protected CriticalCss $criticalCss;
+
+    public function __construct()
+    {
+        $this->criticalCss = CriticalCss::makeInstance();
+    }
+
     protected function needCriticalCss(): bool
     {
         return
 
-            // Check for necessary information and context
-            isset($GLOBALS['TSFE'], $GLOBALS['TYPO3_REQUEST'])
-            && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController
-            && $GLOBALS['TYPO3_REQUEST'] instanceof ServerRequestInterface
-
             // Check application request
+            isset($GLOBALS['TYPO3_REQUEST'])
+            && $GLOBALS['TYPO3_REQUEST'] instanceof ServerRequestInterface
             && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
 
             // Check for default page type
-            && (int)$GLOBALS['TSFE']->type === 0;
+            && (int)$GLOBALS['TSFE']->type === 0
+
+            // Page is not disabled for critical styles
+            && $this->criticalCss->isEnabled();
     }
 
-    protected function getCriticalCss(): ?string
+    protected function handleCriticalCss(): ?string
     {
-        $row = (array)$GLOBALS['TSFE']->page;
-
-        if (isset($row['critical_css_disabled'], $row['critical_css']) && empty($row['critical_css_disabled'])) {
-            return $row['critical_css'] ?: null;
+        if ($this->criticalCss->getStatus() === CriticalCss::STATUS_ACTUAL) {
+            return $this->criticalCss->getCss();
         }
 
-        return null;
+        if($this->criticalCss->getStatus() === CriticalCss::STATUS_PENDING) {
+            return null;
+        }
+
+        if($this->criticalCss->getStatus() === CriticalCss::STATUS_EXPIRED) {
+            // Call styles and set status to 1
+            return null;
+        }
     }
 
     public function addCriticalCss(array &$params): void
     {
-        if ($this->needCriticalCss() && $criticalCss = $this->getCriticalCss()) {
+        if ($this->needCriticalCss() && $criticalCss = $this->handleCriticalCss()) {
 
             // Move all styles to the footer
             $params['footerData'][] = $params['cssFiles'];

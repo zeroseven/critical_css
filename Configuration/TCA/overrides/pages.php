@@ -30,9 +30,9 @@ call_user_func(static function (string $table) {
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Expired', 0, 'overlay-endtime'],
-                    ['Pending', 1, 'overlay-scheduled'],
-                    ['Actual', 2, 'overlay-approved'],
+                    ['Expired', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_EXPIRED, 'overlay-endtime'],
+                    ['Pending', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_PENDING, 'overlay-scheduled'],
+                    ['Actual', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ACTUAL, 'overlay-approved']
                 ],
                 'readOnly' => true,
                 'default' => '0'
