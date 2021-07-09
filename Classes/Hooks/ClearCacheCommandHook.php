@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Zeroseven\CriticalCss\Hooks;
 
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Service\DatabaseService;
 
 class ClearCacheCommandHook
 {
@@ -25,18 +25,10 @@ class ClearCacheCommandHook
 
     public function clearCachePostProc(array &$params): void
     {
-        // Build query
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('pages')
-            ->update('pages')
-            ->set('critical_css_status', 0);
-
-        // Limit to affected page
         if ($pageUid = $this->getAffectedPage($params)) {
-            $queryBuilder->where($queryBuilder->expr()->eq('uid', $pageUid));
+            DatabaseService::updateStatus(CriticalCss::makeInstance(['uid' => $pageUid]), 0);
+        } else {
+            DatabaseService::clearAll();
         }
-
-        // Ciao!
-        $queryBuilder->execute();
     }
 }

@@ -47,7 +47,7 @@ class CriticalCss
     {
         return [
             'critical_css' => $this->getCss(),
-            'critical_css_disabled' => $this->getDisabled(),
+            'critical_css_disabled' => $this->isDisabled(),
             'critical_css_status' => $this->getStatus()
         ];
     }
