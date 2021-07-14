@@ -23,8 +23,12 @@ class DatabaseService
         $queryBuilder = self::getQueryBuilder();
         $queryBuilder->update(self::TABLE)->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
 
+        $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
+
         foreach ($criticalCss->toArray() as $key => $value) {
-            $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
+            if (in_array($key, $allowedFields, true)) {
+                $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
+            }
         }
 
         $queryBuilder->execute();

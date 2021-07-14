@@ -38,13 +38,6 @@ class RequestService
 
     public static function send(Styles $styles): ResponseInterface
     {
-//        die(debug([
-//            'auth_token' => self::getAuthToken(),
-//            'callback_url' => urldecode(self::getCallbackUrl($pageUrl)),
-//            'page_url' => urldecode(self::getPageUrl($styles)),
-//            'page_uid' => (string)$styles->getUid(),
-//        ]));
-
         $url = self::URL . self::getPageUrl($styles) . '?callback=' . self::getCallbackUrl();
 
         $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('get', $url)

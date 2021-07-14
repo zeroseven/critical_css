@@ -48,13 +48,13 @@ class PageRendererHook
         }
 
         if ($this->styles->getStatus() === Styles::STATUS_PENDING) {
-//            DatabaseService::update(Styles::makeInstance()->setCss(':root{background:yellow}'));
-//            DatabaseService::updateStatus($this->styles->setStatus(Styles::STATUS_ACTUAL));
             return null;
         }
 
         if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
+            RequestService::send($this->styles);
             DatabaseService::updateStatus($this->styles->setStatus(Styles::STATUS_PENDING));
+
             return $this->styles->getCss();
         }
     }
