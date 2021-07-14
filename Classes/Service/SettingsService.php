@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Zeroseven\CriticalCss\Service;
+
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+class SettingsService
+{
+    public const EXTENSION_KEY = 'z7_critical_css';
+
+    protected static function getExtensionConfiguration(string $key = '')
+    {
+        return GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTENSION_KEY, $key);
+    }
+
+    public static function getAuthKey(): string
+    {
+        return self::getExtensionConfiguration('authKey');
+    }
+}

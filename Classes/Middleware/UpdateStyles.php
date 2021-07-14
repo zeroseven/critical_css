@@ -11,6 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use Zeroseven\CriticalCss\Model\Styles;
 use Zeroseven\CriticalCss\Service\DatabaseService;
+use Zeroseven\CriticalCss\Service\SettingsService;
 
 class UpdateStyles implements MiddlewareInterface
 {
@@ -36,8 +37,8 @@ class UpdateStyles implements MiddlewareInterface
             // Send response
             return new JsonResponse(['success' => true], 200, [
                 'cache-control' => 'no-cache, must-revalidate',
-                'X-Extension' => 'z7_critical_css',
-                'X-Robots-Tag' => 'noindex'
+                'X-Robots-Tag' => 'noindex',
+                'X-Extension' => SettingsService::EXTENSION_KEY
             ]);
         }
 

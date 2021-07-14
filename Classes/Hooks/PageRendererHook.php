@@ -12,6 +12,7 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use Zeroseven\CriticalCss\Model\Styles;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\RequestService;
+use Zeroseven\CriticalCss\Service\SettingsService;
 
 class PageRendererHook
 {
@@ -38,7 +39,7 @@ class PageRendererHook
             && $this->styles->isEnabled()
 
             // An authentication key is configured
-            && RequestService::getAuthToken();
+            && SettingsService::getAuthKey();
     }
 
     protected function handleCriticalCss(): ?string
@@ -90,7 +91,7 @@ class PageRendererHook
             $params['cssFiles'] = '';
 
             // Add critical css inline into the head
-            $params['cssInline'] .= '<style>/*<![CDATA[*/<!--/*z7_critical_css*/ ' . LF . $criticalCss . LF . ' -->/*]]>*/</style>';
+            $params['cssInline'] .= '<style>/*<![CDATA[*/<!--/*' . SettingsService::EXTENSION_KEY. '*/ ' . LF . $criticalCss . LF . ' -->/*]]>*/</style>';
         }
     }
 }
