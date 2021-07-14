@@ -69,7 +69,7 @@ class PageRendererHook
 
             if($styles) {
                 $path = GeneralUtility::writeStyleSheetContentToTemporaryFile('/* cssInline start */' . LF . $styles . LF . '/* cssInline end */');
-                $pageRenderer->addCssFile($path, null, null, null, null, true);
+                $pageRenderer->addCssFile($path, null, null, 'css inline styles', null, true, null, true);
             }
         }
     }
