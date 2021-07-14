@@ -32,6 +32,11 @@ class DataHandlerHook
             return;
         }
 
+        // Ignore critical css styles from flushing cache!
+        if ($params['tags']['ignore_critical_css'] ?? false) {
+            return;
+        }
+
         // A specific page should be flushed. Maybe something was changed in the content.
         if ($pageUid = $this->getAffectedPage($params)) {
             DatabaseService::updateStatus(Styles::makeInstance()->setStatus(0)->setUid($pageUid));

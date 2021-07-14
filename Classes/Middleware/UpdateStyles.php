@@ -8,7 +8,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Zeroseven\CriticalCss\Model\Styles;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
@@ -17,21 +19,31 @@ class UpdateStyles implements MiddlewareInterface
 {
     public const PATH = '/-/critical_css/receive/';
 
+    protected function clearFrontendCache(int $pageUid): void
+    {
+        GeneralUtility::makeInstance(CacheManager::class)->flushCachesInGroupByTags('pages', ['ignore_critical_css', 'pageId_' . $pageUid]);
+    }
+
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (($path = $request->getUri()->getPath()) && ($path === self::PATH || $path === self::PATH . '/')) {
 
-            if(($criticalCss = (string)$request->getBody())
+            if (
+                ($criticalCss = (string)$request->getBody())
+
                 //TODO: && Check authKey
+
                 //TODO: && Get page uid)
+                && ($pageUid = 1)
             ) {
                 // Update database
                 DatabaseService::update(Styles::makeInstance()
-                    ->setUid(1)
+                    ->setUid($pageUid)
                     ->setStatus(Styles::STATUS_ACTUAL)
                     ->setCss($criticalCss));
 
-                // TODO: clear cache
+                // Clear frontend cache
+                $this->clearFrontendCache($pageUid);
             }
 
             // Send response
