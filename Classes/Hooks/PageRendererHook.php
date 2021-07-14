@@ -6,15 +6,18 @@ namespace Zeroseven\CriticalCss\Hooks;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Zeroseven\CriticalCss\Model\Styles;
+use Zeroseven\CriticalCss\Service\DatabaseService;
 
 class PageRendererHook
 {
-    protected Styles $criticalCss;
+    protected Styles $styles;
 
     public function __construct()
     {
-        $this->criticalCss = Styles::makeInstance();
+        $this->styles = Styles::makeInstance();
     }
 
     protected function needCriticalCss(): bool
@@ -30,26 +33,48 @@ class PageRendererHook
             && (int)$GLOBALS['TSFE']->type === 0
 
             // Page is not disabled for critical styles
-            && $this->criticalCss->isEnabled();
+            && $this->styles->isEnabled();
     }
 
     protected function handleCriticalCss(): ?string
     {
-        if ($this->criticalCss->getStatus() === Styles::STATUS_ACTUAL) {
-            return $this->criticalCss->getCss();
+        if ($this->styles->getStatus() === Styles::STATUS_ACTUAL) {
+            return $this->styles->getCss();
         }
 
-        if($this->criticalCss->getStatus() === Styles::STATUS_PENDING) {
+        if ($this->styles->getStatus() === Styles::STATUS_PENDING) {
+//            DatabaseService::update(Styles::makeInstance()->setCss(':root{background:yellow}'));
+//            DatabaseService::updateStatus($this->styles->setStatus(Styles::STATUS_ACTUAL));
             return null;
         }
 
-        if($this->criticalCss->getStatus() === Styles::STATUS_EXPIRED) {
-            // Call styles and set status to 1
-            return null;
+        if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
+            DatabaseService::updateStatus($this->styles->setStatus(Styles::STATUS_PENDING));
+            return $this->styles->getCss();
         }
     }
 
-    public function addCriticalCss(array &$params): void
+    public function preProcess(array $params, PageRenderer $pageRenderer): void
+    {
+        // Move inline styles to a temporary file
+        if ($this->needCriticalCss() && $this->styles->getCss()) {
+            $styles = '';
+
+            foreach ($params['cssInline'] ?? [] as $key => $value) {
+                if ($params['cssInline'][$key]['code'] ?? null) {
+                    $styles .= $params['cssInline'][$key]['code'];
+                    unset($params['cssInline'][$key]);
+                }
+            }
+
+            if($styles) {
+                $path = GeneralUtility::writeStyleSheetContentToTemporaryFile('/* cssInline start */' . LF . $styles . LF . '/* cssInline end */');
+                $pageRenderer->addCssFile($path, null, null, null, null, true);
+            }
+        }
+    }
+
+    public function postProcess(array &$params): void
     {
         if ($this->needCriticalCss() && $criticalCss = $this->handleCriticalCss()) {
 
@@ -60,7 +85,7 @@ class PageRendererHook
             $params['cssFiles'] = '';
 
             // Add critical css inline into the head
-            $params['cssInline'] .= '<style>/*<![CDATA[*/<!--/*z7_critical_css*/ ' . $criticalCss . ' -->/*]]>*/</style>';
+            $params['cssInline'] .= '<style>/*<![CDATA[*/<!--/*z7_critical_css*/ ' . LF . $criticalCss . LF . ' -->/*]]>*/</style>';
         }
     }
 }
