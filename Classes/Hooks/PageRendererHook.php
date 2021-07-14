@@ -8,8 +8,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use Zeroseven\CriticalCss\Model\Styles;
 use Zeroseven\CriticalCss\Service\DatabaseService;
+use Zeroseven\CriticalCss\Service\RequestService;
 
 class PageRendererHook
 {
@@ -25,15 +27,18 @@ class PageRendererHook
         return
 
             // Check application request
-            isset($GLOBALS['TYPO3_REQUEST'])
-            && $GLOBALS['TYPO3_REQUEST'] instanceof ServerRequestInterface
+            ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
             && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
 
             // Check for default page type
+            && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
             && (int)$GLOBALS['TSFE']->type === 0
 
             // Page is not disabled for critical styles
-            && $this->styles->isEnabled();
+            && $this->styles->isEnabled()
+
+            // An authentication key is configured
+            && RequestService::getAuthToken();
     }
 
     protected function handleCriticalCss(): ?string
