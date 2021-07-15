@@ -52,4 +52,29 @@ class DatabaseService
             ->set('critical_css', '')
             ->execute();
     }
+
+    public static function countStatus(): array
+    {
+        $data = [
+            Styles::STATUS_EXPIRED => 0,
+            Styles::STATUS_PENDING => 0,
+            Styles::STATUS_ACTUAL => 0
+        ];
+
+        $queryBuilder = self::getQueryBuilder();
+
+        $results = $queryBuilder->select('critical_css_status')
+            ->addSelectLiteral($queryBuilder->expr()->count('uid', 'count'))
+            ->from(self::TABLE)
+            ->orderBy('critical_css_status')
+            ->groupBy('critical_css_status')
+            ->execute()
+            ->fetchAllAssociative();
+
+        foreach ($results as $result) {
+            $data[$result['critical_css_status']] = (int)$result['count'];
+        }
+
+        return $data;
+    }
 }

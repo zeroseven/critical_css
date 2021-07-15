@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Zeroseven\CriticalCss\:
+    resource: '../Classes/*'
+
+  dashboard.widget.criticalCssStatus:
+    class: 'TYPO3\CMS\Dashboard\Widgets\DoughnutChartWidget'
+    arguments:
+      $view: '@dashboard.views.widget'
+      $dataProvider: '@Zeroseven\CriticalCss\Widgets\Provider\StatusDataProvider'
+    tags:
+      -   name: dashboard.widget
+          identifier: 'criticalCssStatus'
+          groupNames: 'systemInfo'
+          title: 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.title'
+          description: 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.description'
+          iconIdentifier: 'content-widget-chart-pie'
+          height: 'medium'
