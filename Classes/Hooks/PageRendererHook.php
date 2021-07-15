@@ -54,7 +54,6 @@ class PageRendererHook
 
         if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
             RequestService::send($this->styles);
-            DatabaseService::updateStatus($this->styles->setStatus(Styles::STATUS_PENDING));
 
             return $this->styles->getCss();
         }

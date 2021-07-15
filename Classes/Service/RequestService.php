@@ -40,10 +40,11 @@ class RequestService
             ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
             ->withHeader('X-URL', self::getPageUrl($styles))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
-            ->withHeader('X-PAGE_UID', (string)$styles->getUid());
+            ->withHeader('X-PAGE-UID', (string)$styles->getUid());
 
         try {
             GuzzleClientFactory::getClient()->send($request);
+            DatabaseService::updateStatus($styles->setStatus(Styles::STATUS_PENDING));
         } catch (GuzzleException $e) {
             GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_log')->insert('sys_log',[
                 'type' => SystemLogType::ERROR,
