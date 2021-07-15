@@ -20,4 +20,14 @@ class SettingsService
     {
         return self::getExtensionConfiguration('authenticationToken');
     }
+
+    public static function isDisabled(): bool
+    {
+        return (bool)self::getExtensionConfiguration('disable');
+    }
+
+    public static function isEnabled(): bool
+    {
+        return !self::isDisabled();
+    }
 }

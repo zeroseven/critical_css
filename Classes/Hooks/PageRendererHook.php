@@ -10,7 +10,6 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use Zeroseven\CriticalCss\Model\Styles;
-use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\RequestService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
@@ -37,6 +36,9 @@ class PageRendererHook
 
             // Page is not disabled for critical styles
             && $this->styles->isEnabled()
+
+            // The service is enabled
+            && SettingsService::isEnabled()
 
             // An authentication key is configured
             && SettingsService::getAuthenticationToken();

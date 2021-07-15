@@ -1,2 +1,4 @@
-# cat=configuration/100; type=string; label=Authentication key:Add a key for access to the server
+# cat=configuration/100; type=string; label=Authentication key:Add a key for access to the server.
 authenticationToken =
+# cat=configuration/200; type=boolean; label=Disable critical css:for example while developing on your local computer.
+disable =
