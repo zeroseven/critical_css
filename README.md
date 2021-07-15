@@ -6,4 +6,5 @@ Get this extension via `composer req zeroseven/z7-critical-css`
 
 ## Setup:
 
-Store the authentication key via the extension configuration in the settings module.
+1. Login to the [admin panel](http://64.225.109.175:8055/admin/collections/) and generate a token.
+2. Store the authentication token via the extension configuration in TYPO3 settings module.

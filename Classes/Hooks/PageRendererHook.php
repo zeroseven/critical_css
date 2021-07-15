@@ -39,7 +39,7 @@ class PageRendererHook
             && $this->styles->isEnabled()
 
             // An authentication key is configured
-            && SettingsService::getAuthKey();
+            && SettingsService::getAuthenticationToken();
     }
 
     protected function handleCriticalCss(): ?string

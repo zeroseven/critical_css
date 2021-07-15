@@ -16,8 +16,8 @@ class SettingsService
         return GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTENSION_KEY, $key);
     }
 
-    public static function getAuthKey(): string
+    public static function getAuthenticationToken(): string
     {
-        return self::getExtensionConfiguration('authKey');
+        return self::getExtensionConfiguration('authenticationToken');
     }
 }

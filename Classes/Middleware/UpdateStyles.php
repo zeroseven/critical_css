@@ -31,7 +31,7 @@ class UpdateStyles implements MiddlewareInterface
             if (
                 ($criticalCss = (string)$request->getBody())
 
-                //TODO: && Check authKey
+                //TODO: && Check authenticationToken
 
                 //TODO: && Get page uid)
                 && ($pageUid = 1)

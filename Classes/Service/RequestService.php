@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Zeroseven\CriticalCss\Service;
 
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Http\Uri;
@@ -36,8 +35,8 @@ class RequestService
         $url = self::URL . self::getPageUrl($styles) . '?callback=' . self::getCallbackUrl();
 
         $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('get', $url)
-            ->withHeader('auth_token', SettingsService::getAuthKey())
-            ->withHeader('auth_key', SettingsService::getAuthKey())
+            ->withHeader('auth_token', SettingsService::getAuthenticationToken())
+            ->withHeader('auth_key', SettingsService::getAuthenticationToken())
             ->withHeader('callback_url', self::getCallbackUrl())
             ->withHeader('page_url', self::getPageUrl($styles))
             ->withHeader('page_uid', (string)$styles->getUid());

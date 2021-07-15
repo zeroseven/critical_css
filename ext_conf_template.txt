@@ -1,2 +1,2 @@
 # cat=configuration/100; type=string; label=Authentication key:Add a key for access to the server
-authKey =
+authenticationToken =
