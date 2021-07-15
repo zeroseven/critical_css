@@ -9,6 +9,22 @@
 			<trans-unit id="flushCache.description">
 				<source>Flush all calulated critical styles on all pages</source>
 			</trans-unit>
+
+			<trans-unit id="widget.criticalCssStatus.title">
+				<source>Critical css status</source>
+			</trans-unit>
+			<trans-unit id="widget.criticalCssStatus.description">
+				<source>Get the amount of pending tasks and actual and expired pages.</source>
+			</trans-unit>
+			<trans-unit id="widget.criticalCssStatus.label.0">
+				<source>Expired pages</source>
+			</trans-unit>
+			<trans-unit id="widget.criticalCssStatus.label.1">
+				<source>Pending tasks</source>
+			</trans-unit>
+			<trans-unit id="widget.criticalCssStatus.label.2">
+				<source>Actual pages</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

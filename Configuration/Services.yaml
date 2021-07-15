@@ -16,7 +16,7 @@ services:
       -   name: dashboard.widget
           identifier: 'criticalCssStatus'
           groupNames: 'systemInfo'
-          title: 'widget.criticalCssStatus.title'
-          description: 'widget.criticalCssStatus.description'
+          title: 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.title'
+          description: 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.description'
           iconIdentifier: 'content-widget-chart-pie'
           height: 'medium'
