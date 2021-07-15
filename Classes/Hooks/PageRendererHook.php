@@ -15,7 +15,8 @@ use Zeroseven\CriticalCss\Service\SettingsService;
 
 class PageRendererHook
 {
-    protected Styles $styles;
+    /** @var Styles */
+    protected $styles;
 
     public function __construct()
     {

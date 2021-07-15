@@ -15,15 +15,20 @@ class Styles
 
     public CONST STATUS_ACTUAL = 2;
 
-    protected int $uid;
+    /** @var int */
+    protected $uid;
 
-    protected int $language;
+    /** @var int */
+    protected $language;
 
-    protected string $css;
+    /** @var string */
+    protected $css;
 
-    protected bool $disabled;
+    /** @var bool */
+    protected $disabled;
 
-    protected int $status;
+    /** @var int */
+    protected $status;
 
     public function __construct(array $row = null)
     {
