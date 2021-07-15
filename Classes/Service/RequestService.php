@@ -32,14 +32,11 @@ class RequestService
 
     public static function send(Styles $styles): ResponseInterface
     {
-        $url = self::URL . self::getPageUrl($styles) . '?callback=' . self::getCallbackUrl();
-
-        $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('get', $url)
-            ->withHeader('auth_token', SettingsService::getAuthenticationToken())
-            ->withHeader('auth_key', SettingsService::getAuthenticationToken())
-            ->withHeader('callback_url', self::getCallbackUrl())
-            ->withHeader('page_url', self::getPageUrl($styles))
-            ->withHeader('page_uid', (string)$styles->getUid());
+        $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('get', self::URL)
+            ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
+            ->withHeader('X-URL', self::getPageUrl($styles))
+            ->withHeader('X-CALLBACK', self::getCallbackUrl())
+            ->withHeader('X-PAGE_UID', (string)$styles->getUid());
 
         return GuzzleClientFactory::getClient()->send($request);
     }
