@@ -50,33 +50,31 @@ class PageRendererHook
             return $this->styles->getCss();
         }
 
-        if ($this->styles->getStatus() === Styles::STATUS_PENDING) {
-            return null;
-        }
-
         if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
             RequestService::send($this->styles);
 
             return $this->styles->getCss();
         }
+
+        return null;
     }
 
     public function preProcess(array $params, PageRenderer $pageRenderer): void
     {
         // Move inline styles to a temporary file
-        if ($this->needCriticalCss() && $this->styles->getCss()) {
+        if ($this->needCriticalCss()) {
             $styles = '';
 
             foreach ($params['cssInline'] ?? [] as $key => $value) {
                 if ($params['cssInline'][$key]['code'] ?? null) {
-                    $styles .= $params['cssInline'][$key]['code'];
+                    $styles .= '/* cssInline: ' . $key . ' */' . LF . $params['cssInline'][$key]['code'] . LF;
                     unset($params['cssInline'][$key]);
                 }
             }
 
             if($styles) {
-                $path = GeneralUtility::writeStyleSheetContentToTemporaryFile('/* cssInline start */' . LF . $styles . LF . '/* cssInline end */');
-                $pageRenderer->addCssFile($path, null, null, 'css inline styles', null, true, null, true);
+                $path = GeneralUtility::writeStyleSheetContentToTemporaryFile($styles);
+                $pageRenderer->addCssFile($path, 'stylesheet', 'all', 'css inline styles', null, true, null, true);
             }
         }
     }
@@ -92,7 +90,7 @@ class PageRendererHook
             $params['cssFiles'] = '';
 
             // Add critical css inline into the head
-            $params['cssInline'] .= '<style>/*<![CDATA[*/<!--/*' . SettingsService::EXTENSION_KEY. '*/ ' . LF . $criticalCss . LF . ' -->/*]]>*/</style>';
+            $params['cssInline'] .= '<style>/*z7_critical_css*/' . $criticalCss . '</style>';
         }
     }
 }
