@@ -31,7 +31,7 @@ class RequestService
 
     protected static function getPageUrl(Styles $styles): string
     {
-        return urlencode(GeneralUtility::makeInstance(UriBuilder::class)->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($styles->getUid())->build());
+        return GeneralUtility::makeInstance(UriBuilder::class)->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($styles->getUid())->build();
     }
 
     public static function send(Styles $styles)
