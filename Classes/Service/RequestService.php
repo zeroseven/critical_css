@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\SysLog\Error as SystemLogError;
 use TYPO3\CMS\Core\SysLog\Type as SystemLogType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use Zeroseven\CriticalCss\Middleware\UpdateStyles;
 use Zeroseven\CriticalCss\Model\Styles;
 
@@ -31,7 +32,7 @@ class RequestService
 
     protected static function getPageUrl(Styles $styles): string
     {
-        return GeneralUtility::makeInstance(UriBuilder::class)->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($styles->getUid())->build();
+        return GeneralUtility::makeInstance(ObjectManager::class)->get(UriBuilder::class)->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($styles->getUid())->build();
     }
 
     public static function send(Styles $styles)
