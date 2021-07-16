@@ -36,14 +36,14 @@ class RequestService
         return GeneralUtility::makeInstance(ObjectManager::class)->get(UriBuilder::class)->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($styles->getUid())->build();
     }
 
-    public static function send(Styles $styles)
+    public static function send(string $css, Styles $styles): void
     {
         $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('post', self::URL)
             ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
             ->withHeader('X-URL', self::getPageUrl($styles))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
             ->withHeader('X-PAGE-UID', (string)$styles->getUid())
-            ->withBody(new Stream('all css styles'));
+            ->withBody(new Stream($css));
 
         try {
             GuzzleClientFactory::getClient()->send($request);

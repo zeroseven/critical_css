@@ -23,16 +23,18 @@ class PageRendererHook
         $this->styles = Styles::makeInstance();
     }
 
-    protected function needCriticalCss(): bool
+    protected function ready(): bool
     {
         return
 
-            // Check application request
+            // Access to global parameters
             ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
+            && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
+
+            // Check application type
             && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
 
             // Check for default page type
-            && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
             && (int)$GLOBALS['TSFE']->type === 0
 
             // Page is not disabled for critical styles
@@ -45,46 +47,55 @@ class PageRendererHook
             && SettingsService::getAuthenticationToken();
     }
 
-    protected function handleCriticalCss(): ?string
+    protected function collectCss(array $params): string
     {
-        if ($this->styles->getStatus() === Styles::STATUS_ACTUAL) {
-            return $this->styles->getCss();
-        }
+        $styles = [];
 
-        if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
-            RequestService::send($this->styles);
-
-            return $this->styles->getCss();
-        }
-
-        return null;
-    }
-
-    public function preProcess(array $params, PageRenderer $pageRenderer): void
-    {
-        // Move inline styles to a temporary file
-        if ($this->needCriticalCss()) {
-            $styles = '';
-
-            foreach ($params['cssInline'] ?? [] as $key => $value) {
-                if ($params['cssInline'][$key]['code'] ?? null) {
-                    $styles .= '/* cssInline: ' . $key . ' */' . LF . $params['cssInline'][$key]['code'] . LF;
-                    unset($params['cssInline'][$key]);
-                }
-            }
-
-            if($styles) {
-                $path = GeneralUtility::writeStyleSheetContentToTemporaryFile($styles);
-                $pageRenderer->addCssFile($path, 'stylesheet', 'all', 'css inline styles', null, true, null, true);
+        // Collect included files
+        foreach ($params['cssFiles'] as $key => $value) {
+            if (($path = $value['file'] ?? null)
+                && ($file = GeneralUtility::getFileAbsFileName($path))
+                && file_exists($file)
+                && $content = file_get_contents($file)
+            ) {
+                ($value['forceOnTop'] ?? null) ? array_unshift($styles, $content) : array_push($styles, $content);
             }
         }
+
+        // Collect inline styles
+        foreach ($params['cssInline'] ?? [] as $key => $value) {
+            if ($params['cssInline'][$key]['code'] ?? null) {
+                $styles[] = $params['cssInline'][$key]['code'];
+            }
+        }
+
+        // Todo: inlcude css libs
+
+        return implode(LF, $styles);
     }
 
-    public function postProcess(array &$params): void
+    protected function cssInlineToTemporaryFile(array &$params, PageRenderer $pageRenderer): void
     {
-        if ($this->needCriticalCss() && $criticalCss = $this->handleCriticalCss()) {
+        $styles = '';
 
-            // Move all styles to the footer
+        foreach ($params['cssInline'] ?? [] as $key => $value) {
+            if ($params['cssInline'][$key]['code'] ?? null) {
+                $styles .= '/* cssInline: ' . $key . ' */' . LF . $params['cssInline'][$key]['code'] . LF;
+                unset($params['cssInline'][$key]);
+            }
+        }
+
+        if ($styles) {
+            $path = GeneralUtility::writeStyleSheetContentToTemporaryFile($styles);
+            $pageRenderer->addCssFile($path, 'stylesheet', 'all', 'css inline styles', null, true, null, true);
+        }
+    }
+
+    protected function renderCriticalCss(array &$params): void
+    {
+        if ($criticalCss = $this->styles->getCss()) {
+
+            // Move all css files to the footer
             $params['footerData'][] = $params['cssFiles'];
 
             // Remove styles
@@ -92,6 +103,26 @@ class PageRendererHook
 
             // Add critical css inline into the head
             $params['cssInline'] .= '<style>/*z7_critical_css*/' . $criticalCss . '</style>';
+        }
+    }
+
+    public function preProcess(array &$params, PageRenderer $pageRenderer): void
+    {
+        if ($this->ready()) {
+            if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
+                RequestService::send($this->collectCss($params), $this->styles);
+            }
+
+            if($this->styles->getCss()) {
+                $this->cssInlineToTemporaryFile($params, $pageRenderer);
+            }
+        }
+    }
+
+    public function postProcess(array &$params): void
+    {
+        if ($this->ready()) {
+            $this->renderCriticalCss($params);
         }
     }
 }
