@@ -51,8 +51,8 @@ class RequestService
                 'type' => SystemLogType::ERROR,
                 'action' => SystemLogAction::UNDEFINED,
                 'error' => SystemLogError::SYSTEM_ERROR,
-                'details' => $e->getMessage() . '. HTTP headers: ' . json_encode($request->getHeaders()),
-                'tstamp' => time()
+                'tstamp' => time(),
+                'details' => sprintf("%s. HTTP headers: %s. Body: %sb", $e->getMessage(), json_encode(array_diff_key($request->getHeaders(), ['X-TOKEN' => false])), mb_strlen($css))
             ]);
         }
     }
