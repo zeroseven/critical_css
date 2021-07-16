@@ -40,6 +40,9 @@ class PageRendererHook
             // Page is not disabled for critical styles
             && $this->styles->isEnabled()
 
+            // There is no error on the page
+            && $this->styles->getStatus() !== Styles::STATUS_ERROR
+
             // The service is enabled
             && SettingsService::isEnabled()
 
@@ -113,7 +116,7 @@ class PageRendererHook
                 RequestService::send($this->collectCss($params), $this->styles);
             }
 
-            if($this->styles->getCss()) {
+            if ($this->styles->getCss()) {
                 $this->cssInlineToTemporaryFile($params, $pageRenderer);
             }
         }

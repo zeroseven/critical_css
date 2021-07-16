@@ -58,7 +58,8 @@ class DatabaseService
         $data = [
             Styles::STATUS_EXPIRED => 0,
             Styles::STATUS_PENDING => 0,
-            Styles::STATUS_ACTUAL => 0
+            Styles::STATUS_ACTUAL => 0,
+            Styles::STATUS_ERROR => 0,
         ];
 
         $queryBuilder = self::getQueryBuilder();

@@ -25,6 +25,9 @@
 			<trans-unit id="widget.criticalCssStatus.label.2">
 				<source>Actual pages</source>
 			</trans-unit>
+			<trans-unit id="widget.criticalCssStatus.label.3">
+				<source>Failed requests</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

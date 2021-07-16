@@ -15,6 +15,8 @@ class Styles
 
     public CONST STATUS_ACTUAL = 2;
 
+    public CONST STATUS_ERROR = 3;
+
     /** @var int */
     protected $uid;
 

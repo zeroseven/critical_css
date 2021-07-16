@@ -32,7 +32,8 @@ call_user_func(static function (string $table) {
                 'items' => [
                     ['Expired', \Zeroseven\CriticalCss\Model\Styles::STATUS_EXPIRED, 'overlay-endtime'],
                     ['Pending', \Zeroseven\CriticalCss\Model\Styles::STATUS_PENDING, 'overlay-scheduled'],
-                    ['Actual', \Zeroseven\CriticalCss\Model\Styles::STATUS_ACTUAL, 'overlay-approved']
+                    ['Actual', \Zeroseven\CriticalCss\Model\Styles::STATUS_ACTUAL, 'overlay-approved'],
+                    ['Error', \Zeroseven\CriticalCss\Model\Styles::STATUS_ERROR, 'overlay-warning']
                 ],
                 'readOnly' => true,
                 'default' => '0'

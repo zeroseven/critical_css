@@ -47,6 +47,7 @@ class RequestService
             GuzzleClientFactory::getClient()->send($request, ['body' => $css]);
             DatabaseService::updateStatus($styles->setStatus(Styles::STATUS_PENDING));
         } catch (GuzzleException $e) {
+            DatabaseService::updateStatus($styles->setStatus(Styles::STATUS_ERROR));
             GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_log')->insert('sys_log', [
                 'type' => SystemLogType::ERROR,
                 'action' => SystemLogAction::UNDEFINED,

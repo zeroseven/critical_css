@@ -24,7 +24,8 @@ class StatusDataProvider implements ChartDataProviderInterface
                     'backgroundColor' => [
                         Styles::STATUS_EXPIRED => '#ff8700',
                         Styles::STATUS_PENDING => '#6daae0',
-                        Styles::STATUS_ACTUAL => '#79a548'
+                        Styles::STATUS_ACTUAL => '#79a548',
+                        Styles::STATUS_ERROR => '#e74c3c'
                     ],
                     'data' => array_values($result)
                 ]
