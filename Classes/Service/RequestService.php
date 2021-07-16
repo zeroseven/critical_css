@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\SysLog\Action as SystemLogAction;
 use TYPO3\CMS\Core\SysLog\Error as SystemLogError;
@@ -37,11 +38,12 @@ class RequestService
 
     public static function send(Styles $styles)
     {
-        $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('get', self::URL)
+        $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('post', self::URL)
             ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
             ->withHeader('X-URL', self::getPageUrl($styles))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
-            ->withHeader('X-PAGE-UID', (string)$styles->getUid());
+            ->withHeader('X-PAGE-UID', (string)$styles->getUid())
+            ->withBody(new Stream('all css styles'));
 
         try {
             GuzzleClientFactory::getClient()->send($request);
