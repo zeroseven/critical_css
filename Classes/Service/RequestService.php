@@ -38,6 +38,7 @@ class RequestService
     public static function send(string $css, Styles $styles): void
     {
         $request = GeneralUtility::makeInstance(RequestFactory::class)->createRequest('post', self::URL)
+            ->withHeader('Content-Type', 'text/plain')
             ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
             ->withHeader('X-URL', self::getPageUrl($styles))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
