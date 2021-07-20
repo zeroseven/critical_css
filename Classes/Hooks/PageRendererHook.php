@@ -50,18 +50,20 @@ class PageRendererHook
             && SettingsService::getAuthenticationToken();
     }
 
-    protected function collectCss(array $params): string
+    protected function collectCss(array $params): ?string
     {
         $styles = [];
 
         // Collect included files
-        foreach ($params['cssFiles'] as $key => $value) {
-            if (($path = $value['file'] ?? null)
+        foreach ($params['cssFiles'] as $cssFile) {
+            if (empty($cssFile['allWrap'])
+                && preg_match(SettingsService::getAllowedMediaTypes(), $cssFile['media'])
+                && ($path = $cssFile['file'] ?? null)
                 && ($file = GeneralUtility::getFileAbsFileName($path))
                 && file_exists($file)
                 && $content = file_get_contents($file)
             ) {
-                ($value['forceOnTop'] ?? null) ? array_unshift($styles, $content) : array_push($styles, $content);
+                ($cssFile['forceOnTop'] ?? null) ? array_unshift($styles, $content) : array_push($styles, $content);
             }
         }
 
@@ -74,7 +76,7 @@ class PageRendererHook
 
         // Todo: inlcude css libs
 
-        return implode(LF, $styles);
+        return count($styles) ? implode(LF, $styles) : null;
     }
 
     protected function cssInlineToTemporaryFile(array &$params, PageRenderer $pageRenderer): void
@@ -112,8 +114,8 @@ class PageRendererHook
     public function preProcess(array &$params, PageRenderer $pageRenderer): void
     {
         if ($this->ready()) {
-            if ($this->styles->getStatus() === Styles::STATUS_EXPIRED) {
-                RequestService::send($this->collectCss($params), $this->styles);
+            if ($this->styles->getStatus() === Styles::STATUS_EXPIRED && $css = $this->collectCss($params)) {
+                RequestService::send($css, $this->styles);
             }
 
             if ($this->styles->getCss()) {

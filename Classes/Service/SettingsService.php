@@ -30,4 +30,9 @@ class SettingsService
     {
         return !self::isDisabled();
     }
+
+    public static function getAllowedMediaTypes(): string
+    {
+        return self::getExtensionConfiguration('allowedMediaTypes');
+    }
 }

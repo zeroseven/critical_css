@@ -2,3 +2,5 @@
 authenticationToken =
 # cat=configuration/200; type=boolean; label=Disable critical css:for example while developing on your local computer.
 disable =
+# cat=configuration/300; type=string; label=Allowed types:Regex pattern of allowed media types
+allowedMediaTypes = /^((.*(only|\,)\s+)?(all|screen)((\s|\,).*)?)?$/i
