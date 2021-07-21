@@ -34,6 +34,9 @@ class PageRendererHook
             // Check application type
             && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
 
+            // No frontend user logged in
+            && empty($GLOBALS['TSFE']->fe_user->user)
+
             // Check for default page type
             && (int)$GLOBALS['TSFE']->type === 0
 
