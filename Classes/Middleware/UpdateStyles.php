@@ -52,11 +52,6 @@ class UpdateStyles implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (($path = $request->getUri()->getPath()) && ($path === self::PATH || $path === self::PATH . '/' || $path === rtrim(self::PATH, '/'))) {
-            mail('r.thanner@zeroseven.de', self::class, implode("\r\n", [
-                $this->getHeader($request, 'X-PAGE-UID'),
-                $this->getHeader($request, 'X-TOKEN')
-            ]));
-
             if (
                 ($criticalCss = (string)$request->getBody())
                 && ($pageUid = (int)$this->getHeader($request, 'X-PAGE-UID'))
