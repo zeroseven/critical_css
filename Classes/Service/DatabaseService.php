@@ -6,6 +6,7 @@ namespace Zeroseven\CriticalCss\Service;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Zeroseven\CriticalCss\Model\Styles;
 
@@ -67,6 +68,15 @@ class DatabaseService
         $results = $queryBuilder->select('critical_css_status')
             ->addSelectLiteral($queryBuilder->expr()->count('uid', 'count'))
             ->from(self::TABLE)
+            ->where($queryBuilder->expr()->notIn('doktype', [
+                PageRepository::DOKTYPE_LINK,
+                PageRepository::DOKTYPE_SHORTCUT,
+                PageRepository::DOKTYPE_BE_USER_SECTION,
+                PageRepository::DOKTYPE_MOUNTPOINT,
+                PageRepository::DOKTYPE_SPACER,
+                PageRepository::DOKTYPE_SYSFOLDER,
+                PageRepository::DOKTYPE_RECYCLER,
+            ]))
             ->orderBy('critical_css_status')
             ->groupBy('critical_css_status')
             ->execute()
