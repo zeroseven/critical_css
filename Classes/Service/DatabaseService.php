@@ -75,7 +75,7 @@ class DatabaseService
                 PageRepository::DOKTYPE_MOUNTPOINT,
                 PageRepository::DOKTYPE_SPACER,
                 PageRepository::DOKTYPE_SYSFOLDER,
-                PageRepository::DOKTYPE_RECYCLER,
+                PageRepository::DOKTYPE_RECYCLER
             ]))
             ->orderBy('critical_css_status')
             ->groupBy('critical_css_status')
