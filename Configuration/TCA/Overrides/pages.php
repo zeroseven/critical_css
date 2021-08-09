@@ -7,6 +7,7 @@ call_user_func(static function (string $table) {
         'critical_css_disabled' => [
             'exclude' => true,
             'label' => 'Disable critical styles for selected page',
+            'l10n_mode' => 'exclude',
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxLabeledToggle',
