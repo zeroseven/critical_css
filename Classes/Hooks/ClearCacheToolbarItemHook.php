@@ -7,6 +7,7 @@ namespace Zeroseven\CriticalCss\Hooks;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Toolbar\ClearCacheActionsHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Zeroseven\CriticalCss\Service\SettingsService;
 
 class ClearCacheToolbarItemHook implements ClearCacheActionsHookInterface
 {
@@ -14,14 +15,16 @@ class ClearCacheToolbarItemHook implements ClearCacheActionsHookInterface
 
     public function manipulateCacheActions(&$cacheActions, &$optionValues): void
     {
-        $cacheActions[] = [
-            'id' => 'critical_css',
-            'title' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.title',
-            'description' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.description',
-            'href' => (string)GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('tce_db', ['cacheCmd' => self::CACHE_CMD]),
-            'iconIdentifier' => 'apps-toolbar-menu-cache',
-        ];
+        if (SettingsService::isEnabled()) {
+            $cacheActions[] = [
+                'id' => 'critical_css',
+                'title' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.title',
+                'description' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.description',
+                'href' => (string)GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('tce_db', ['cacheCmd' => self::CACHE_CMD]),
+                'iconIdentifier' => 'apps-toolbar-menu-cache',
+            ];
 
-        $optionValues[] = 'critical_css';
+            $optionValues[] = 'critical_css';
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace Zeroseven\CriticalCss\Hooks;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
+use Zeroseven\CriticalCss\Service\SettingsService;
 
 class DataHandlerHook
 {
@@ -27,13 +28,12 @@ class DataHandlerHook
     {
         $cacheCmd = $params['cacheCmd'];
 
-        // It's the "flush frontend cache" command. Ignore!
-        if ($cacheCmd === 'pages' || $cacheCmd === 'lowlevel') {
-            return;
-        }
-
-        // Ignore critical css styles from flushing cache!
-        if ($params['tags']['ignore_critical_css'] ?? false) {
+        // Do nothing on some conditions
+        if (
+            ($params['tags']['ignore_critical_css'] ?? false) // Ignore critical css styles from flushing cache ...
+            || ($cacheCmd === 'pages' || $cacheCmd === 'lowlevel')  // It's the "flush frontend cache" command ...
+            || SettingsService::isDisabled() // Service is disabled ...
+        ) {
             return;
         }
 
