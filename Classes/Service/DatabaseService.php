@@ -15,9 +15,34 @@ class DatabaseService
 {
     protected const TABLE = 'pages';
 
-    protected static function getQueryBuilder(): QueryBuilder
+    protected static function getQueryBuilder(Page $page = null): QueryBuilder
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
+        if ($page === null) {
+            return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
+        }
+
+        $queryBuilder = self::getQueryBuilder();
+
+        // All translations of a record
+        if($page->getLanguage() === null) {
+            $queryBuilder->where($queryBuilder->expr()->eq('uid', $page->getUid()));
+            $queryBuilder->orWhere($queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $page->getUid()));
+        }
+
+        // Default language only
+        if ($page->getLanguage() === 0) {
+            $queryBuilder->where($queryBuilder->expr()->eq('uid', $page->getUid()));
+        }
+
+        // Specific language
+        if ($page->getLanguage()) {
+            $queryBuilder->where(
+                $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['languageField'], $page->getLanguage()),
+                $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $page->getUid())
+            );
+        }
+
+        return $queryBuilder;
     }
 
     protected static function log(\Exception $exception): void
@@ -27,11 +52,10 @@ class DatabaseService
 
     public static function update(Page $page): void
     {
-        try {
-            $queryBuilder = self::getQueryBuilder();
-            $queryBuilder->update(self::TABLE)->where($queryBuilder->expr()->eq('uid', $page->getUid()));
+        $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
 
-            $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
+        try {
+            $queryBuilder = self::getQueryBuilder($page)->update(self::TABLE);
 
             foreach ($page->toArray() as $key => $value) {
                 if (in_array($key, $allowedFields, true)) {
@@ -48,12 +72,7 @@ class DatabaseService
     public static function updateStatus(Page $page): void
     {
         try {
-            $queryBuilder = self::getQueryBuilder();
-
-            $queryBuilder->update(self::TABLE)
-                ->set('critical_css_status', $page->getStatus())
-                ->where($queryBuilder->expr()->eq('uid', $page->getUid()))
-                ->execute();
+            self::getQueryBuilder($page)->update(self::TABLE)->set('critical_css_status', $page->getStatus())->execute();
         } catch (InvalidFieldNameException $exception) {
             self::log($exception);
         }

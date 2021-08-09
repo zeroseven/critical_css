@@ -39,7 +39,7 @@ class Page
         }
 
         $this->uid = (int)($row['uid'] ?: 0);
-        $this->language = (int)($row['sys_language_uid'] ?: 0);
+        $this->language = isset($row['sys_language_uid']) ? (int)$row['sys_language_uid'] : null;
         $this->css = (string)($row['critical_css'] ?: '');
         $this->disabled = (bool)($row['critical_css_disabled'] ?: false);
         $this->status = (int)($row['critical_css_status'] ?: 0);
@@ -70,12 +70,12 @@ class Page
         return $this;
     }
 
-    public function getLanguage(): int
+    public function getLanguage(): ?int
     {
         return $this->language;
     }
 
-    public function setLanguage(int $language): self
+    public function setLanguage(int $language = null): self
     {
         $this->language = $language;
         return $this;
