@@ -38,7 +38,8 @@ class RequestService
             ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
             ->withHeader('X-URL', self::getPageUrl($page))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
-            ->withHeader('X-PAGE-UID', (string)$page->getUid());
+            ->withHeader('X-PAGE-UID', (string)$page->getUid())
+            ->withHeader('X-PAGE-LANGUAGE', (string)$page->getLanguage());
 
         try {
             GuzzleClientFactory::getClient()->send($request, ['body' => $css]);

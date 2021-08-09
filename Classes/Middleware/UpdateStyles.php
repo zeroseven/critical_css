@@ -53,13 +53,14 @@ class UpdateStyles implements MiddlewareInterface
     {
         if (($path = $request->getUri()->getPath()) && ($path === self::PATH || $path === self::PATH . '/' || $path === rtrim(self::PATH, '/'))) {
             if (
-                ($criticalCss = (string)$request->getBody())
+                $this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken()
+                && ($criticalCss = (string)$request->getBody())
                 && ($pageUid = (int)$this->getHeader($request, 'X-PAGE-UID'))
-                && ($this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken())
             ) {
                 // Update database
                 DatabaseService::update(Page::makeInstance()
                     ->setUid($pageUid)
+                    ->setLanguage((int)$this->getHeader($request, 'X-PAGE-LANGUAGE'))
                     ->setStatus(Page::STATUS_ACTUAL)
                     ->setCss($criticalCss));
 
