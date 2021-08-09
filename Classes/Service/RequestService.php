@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace Zeroseven\CriticalCss\Service;
 
 use GuzzleHttp\Exception\GuzzleException;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Http\Uri;
-use TYPO3\CMS\Core\SysLog\Action as SystemLogAction;
-use TYPO3\CMS\Core\SysLog\Error as SystemLogError;
-use TYPO3\CMS\Core\SysLog\Type as SystemLogType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -49,13 +45,7 @@ class RequestService
             DatabaseService::updateStatus($styles->setStatus(Styles::STATUS_PENDING));
         } catch (GuzzleException $e) {
             DatabaseService::updateStatus($styles->setStatus(Styles::STATUS_ERROR));
-            GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_log')->insert('sys_log', [
-                'type' => SystemLogType::ERROR,
-                'action' => SystemLogAction::UNDEFINED,
-                'error' => SystemLogError::SYSTEM_ERROR,
-                'tstamp' => time(),
-                'details' => sprintf("%s. HTTP headers: %s. Body: %sb", $e->getMessage(), json_encode(array_diff_key($request->getHeaders(), ['X-TOKEN' => false])), mb_strlen($css))
-            ]);
+            LogService::systemError(sprintf("%s. HTTP headers: %s. Body: %sb", $e->getMessage(), json_encode(array_diff_key($request->getHeaders(), ['X-TOKEN' => false])), mb_strlen($css)));
         }
     }
 }
