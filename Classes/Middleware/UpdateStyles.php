@@ -11,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Zeroseven\CriticalCss\Model\Styles;
+use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
@@ -58,9 +58,9 @@ class UpdateStyles implements MiddlewareInterface
                 && ($this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken())
             ) {
                 // Update database
-                DatabaseService::update(Styles::makeInstance()
+                DatabaseService::update(Page::makeInstance()
                     ->setUid($pageUid)
-                    ->setStatus(Styles::STATUS_ACTUAL)
+                    ->setStatus(Page::STATUS_ACTUAL)
                     ->setCss($criticalCss));
 
                 // Clear frontend cache

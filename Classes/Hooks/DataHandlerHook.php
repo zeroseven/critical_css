@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Zeroseven\CriticalCss\Hooks;
 
 use TYPO3\CMS\Core\Utility\MathUtility;
-use Zeroseven\CriticalCss\Model\Styles;
+use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 
 class DataHandlerHook
@@ -39,7 +39,7 @@ class DataHandlerHook
 
         // A specific page should be flushed. Maybe something was changed in the content.
         if ($pageUid = $this->getAffectedPage($params)) {
-            DatabaseService::updateStatus(Styles::makeInstance()->setStatus(0)->setUid($pageUid));
+            DatabaseService::updateStatus(Page::makeInstance()->setStatus(0)->setUid($pageUid));
         }
 
         // Reset all critical styles.

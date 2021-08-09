@@ -9,7 +9,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Zeroseven\CriticalCss\Model\Styles;
+use Zeroseven\CriticalCss\Model\Page;
 
 class DatabaseService
 {
@@ -25,15 +25,15 @@ class DatabaseService
         LogService::systemError($exception->getMessage() . ' (' . self::class . ': ' . debug_backtrace()[1]['function'] . ')');
     }
 
-    public static function update(Styles $criticalCss): void
+    public static function update(Page $page): void
     {
         try {
             $queryBuilder = self::getQueryBuilder();
-            $queryBuilder->update(self::TABLE)->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
+            $queryBuilder->update(self::TABLE)->where($queryBuilder->expr()->eq('uid', $page->getUid()));
 
             $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
 
-            foreach ($criticalCss->toArray() as $key => $value) {
+            foreach ($page->toArray() as $key => $value) {
                 if (in_array($key, $allowedFields, true)) {
                     $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
                 }
@@ -45,14 +45,14 @@ class DatabaseService
         }
     }
 
-    public static function updateStatus(Styles $criticalCss): void
+    public static function updateStatus(Page $page): void
     {
         try {
             $queryBuilder = self::getQueryBuilder();
 
             $queryBuilder->update(self::TABLE)
-                ->set('critical_css_status', $criticalCss->getStatus())
-                ->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()))
+                ->set('critical_css_status', $page->getStatus())
+                ->where($queryBuilder->expr()->eq('uid', $page->getUid()))
                 ->execute();
         } catch (InvalidFieldNameException $exception) {
             self::log($exception);
@@ -76,10 +76,10 @@ class DatabaseService
     {
         try {
             $data = [
-                Styles::STATUS_EXPIRED => 0,
-                Styles::STATUS_PENDING => 0,
-                Styles::STATUS_ACTUAL => 0,
-                Styles::STATUS_ERROR => 0,
+                Page::STATUS_EXPIRED => 0,
+                Page::STATUS_PENDING => 0,
+                Page::STATUS_ACTUAL => 0,
+                Page::STATUS_ERROR => 0,
             ];
 
             $queryBuilder = self::getQueryBuilder();

@@ -7,15 +7,15 @@ namespace Zeroseven\CriticalCss\Model;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class Styles
+class Page
 {
-    public CONST STATUS_EXPIRED = 0;
+    public const STATUS_EXPIRED = 0;
 
-    public CONST STATUS_PENDING = 1;
+    public const STATUS_PENDING = 1;
 
-    public CONST STATUS_ACTUAL = 2;
+    public const STATUS_ACTUAL = 2;
 
-    public CONST STATUS_ERROR = 3;
+    public const STATUS_ERROR = 3;
 
     /** @var int */
     protected $uid;
@@ -34,8 +34,8 @@ class Styles
 
     public function __construct(array $row = null)
     {
-        if (empty($row) && $GLOBALS['TSFE'] && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
-            $row = (array)$GLOBALS['TSFE']->page;
+        if (empty($row) && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController) {
+            $row = $GLOBALS['TSFE']->page;
         }
 
         $this->uid = (int)($row['uid'] ?: 0);

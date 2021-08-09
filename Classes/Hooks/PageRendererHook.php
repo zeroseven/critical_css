@@ -9,18 +9,18 @@ use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use Zeroseven\CriticalCss\Model\Styles;
+use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\RequestService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
 class PageRendererHook
 {
-    /** @var Styles */
-    protected $styles;
+    /** @var Page */
+    protected $page;
 
     public function __construct()
     {
-        $this->styles = Styles::makeInstance();
+        $this->page = Page::makeInstance();
     }
 
     protected function ready(): bool
@@ -41,10 +41,10 @@ class PageRendererHook
             && (int)$GLOBALS['TSFE']->type === 0
 
             // Page is not disabled for critical styles
-            && $this->styles->isEnabled()
+            && $this->page->isEnabled()
 
             // There is no error on the page
-            && $this->styles->getStatus() !== Styles::STATUS_ERROR
+            && $this->page->getStatus() !== Page::STATUS_ERROR
 
             // The service is enabled
             && SettingsService::isEnabled()
@@ -101,7 +101,7 @@ class PageRendererHook
 
     protected function renderCriticalCss(array &$params): void
     {
-        if ($criticalCss = $this->styles->getCss()) {
+        if ($criticalCss = $this->page->getCss()) {
 
             // Move all css files to the footer
             $params['footerData'][] = $params['cssFiles'];
@@ -117,11 +117,11 @@ class PageRendererHook
     public function preProcess(array &$params, PageRenderer $pageRenderer): void
     {
         if ($this->ready()) {
-            if ($this->styles->getStatus() === Styles::STATUS_EXPIRED && $css = $this->collectCss($params)) {
-                RequestService::send($css, $this->styles);
+            if ($this->page->getStatus() === Page::STATUS_EXPIRED && $css = $this->collectCss($params)) {
+                RequestService::send($css, $this->page);
             }
 
-            if ($this->styles->getCss()) {
+            if ($this->page->getCss()) {
                 $this->cssInlineToTemporaryFile($params, $pageRenderer);
             }
         }
