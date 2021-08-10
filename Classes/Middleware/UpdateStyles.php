@@ -11,6 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
@@ -53,13 +54,16 @@ class UpdateStyles implements MiddlewareInterface
     {
         if (($path = $request->getUri()->getPath()) && ($path === self::PATH || $path === self::PATH . '/' || $path === rtrim(self::PATH, '/'))) {
             if (
-                ($criticalCss = (string)$request->getBody())
+                $this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken()
+                && ($criticalCss = (string)$request->getBody())
                 && ($pageUid = (int)$this->getHeader($request, 'X-PAGE-UID'))
-                && ($this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken())
             ) {
+                $pageLanguage = MathUtility::canBeInterpretedAsInteger($language = $this->getHeader($request, 'X-PAGE-LANGUAGE')) ? (int)$language : null;
+
                 // Update database
                 DatabaseService::update(Page::makeInstance()
                     ->setUid($pageUid)
+                    ->setLanguage($pageLanguage)
                     ->setStatus(Page::STATUS_ACTUAL)
                     ->setCss($criticalCss));
 
