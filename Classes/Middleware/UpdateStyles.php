@@ -31,9 +31,11 @@ class UpdateStyles implements MiddlewareInterface
     protected function getHeader(ServerRequestInterface $request, string $key): ?string
     {
         if ($request->hasHeader($key) && $value = $request->getHeader($key)) {
-            if(is_array($value) && $value[0] ?? null) {
-                return (string)$value[0];
-            } elseif (is_string($value) || is_int($value)) {
+            if (is_array($value) && $value[0] ?? null) {
+                return $value[0];
+            }
+
+            if (is_string($value) || is_int($value)) {
                 return (string)$value;
             }
         }
@@ -43,7 +45,7 @@ class UpdateStyles implements MiddlewareInterface
 
     protected function sendJsonResponse(bool $success): ResponseInterface
     {
-        return new JsonResponse(['success' => $success], $success ? 200 : 200, [
+        return new JsonResponse(['success' => $success], $success ? 200 : 400, [
             'cache-control' => 'no-cache, must-revalidate',
             'X-Robots-Tag' => 'noindex',
             'X-Extension' => SettingsService::EXTENSION_KEY

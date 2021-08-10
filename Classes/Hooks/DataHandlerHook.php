@@ -34,7 +34,7 @@ class DataHandlerHook
         return null;
     }
 
-    protected function pageUpdated(array $params, DataHandler $dataHandler): ?Page
+    protected function pageUpdated(array $params): ?Page
     {
         if ($params['table'] === 'pages' && $pageUid = (int)$params['uid_page']) {
             if ($pageUid === (int)$params['uid']) {
@@ -90,12 +90,12 @@ class DataHandlerHook
         }
 
         // Page has been updated
-        if ($page = $this->pageUpdated($params, $dataHandler)) {
+        if ($page = $this->pageUpdated($params)) {
             DatabaseService::updateStatus($page->setStatus(Page::STATUS_EXPIRED));
         }
 
-        // A specific page should be flushed. Maybe something was changed in the content.
-        if ($page = $this->pageFlushed($params, $dataHandler)) {
+        // The "clear page cache" button was pressed
+        if ($page = $this->pageFlushed($params)) {
             DatabaseService::updateStatus($page->setStatus(Page::STATUS_EXPIRED));
         }
 
