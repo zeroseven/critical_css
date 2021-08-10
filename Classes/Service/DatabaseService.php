@@ -9,36 +9,36 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Zeroseven\CriticalCss\Model\Page;
+use Zeroseven\CriticalCss\Model\CriticalCss;
 
 class DatabaseService
 {
     protected const TABLE = 'pages';
 
-    protected static function getQueryBuilder(Page $page = null): QueryBuilder
+    protected static function getQueryBuilder(CriticalCss $criticalCss = null): QueryBuilder
     {
-        if ($page === null) {
+        if ($criticalCss === null) {
             return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
         }
 
         $queryBuilder = self::getQueryBuilder();
 
         // All translations of a record
-        if($page->getLanguage() === null) {
-            $queryBuilder->where($queryBuilder->expr()->eq('uid', $page->getUid()));
-            $queryBuilder->orWhere($queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $page->getUid()));
+        if($criticalCss->getLanguage() === null) {
+            $queryBuilder->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
+            $queryBuilder->orWhere($queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $criticalCss->getUid()));
         }
 
         // Default language only
-        if ($page->getLanguage() === 0) {
-            $queryBuilder->where($queryBuilder->expr()->eq('uid', $page->getUid()));
+        if ($criticalCss->getLanguage() === 0) {
+            $queryBuilder->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
         }
 
         // Specific language
-        if ($page->getLanguage()) {
+        if ($criticalCss->getLanguage()) {
             $queryBuilder->where(
-                $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['languageField'], $page->getLanguage()),
-                $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $page->getUid())
+                $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['languageField'], $criticalCss->getLanguage()),
+                $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $criticalCss->getUid())
             );
         }
 
@@ -50,14 +50,14 @@ class DatabaseService
         LogService::systemError($exception->getMessage() . ' (' . self::class . ': ' . debug_backtrace()[1]['function'] . ')');
     }
 
-    public static function update(Page $page): void
+    public static function update(CriticalCss $criticalCss): void
     {
         $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
 
         try {
-            $queryBuilder = self::getQueryBuilder($page)->update(self::TABLE);
+            $queryBuilder = self::getQueryBuilder($criticalCss)->update(self::TABLE);
 
-            foreach ($page->toArray() as $key => $value) {
+            foreach ($criticalCss->toArray() as $key => $value) {
                 if (in_array($key, $allowedFields, true)) {
                     $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
                 }
@@ -69,10 +69,10 @@ class DatabaseService
         }
     }
 
-    public static function updateStatus(Page $page): void
+    public static function updateStatus(CriticalCss $criticalCss): void
     {
         try {
-            self::getQueryBuilder($page)->update(self::TABLE)->set('critical_css_status', $page->getStatus())->execute();
+            self::getQueryBuilder($criticalCss)->update(self::TABLE)->set('critical_css_status', $criticalCss->getStatus())->execute();
         } catch (InvalidFieldNameException $exception) {
             self::log($exception);
         }
@@ -95,10 +95,10 @@ class DatabaseService
     {
         try {
             $data = [
-                Page::STATUS_EXPIRED => 0,
-                Page::STATUS_PENDING => 0,
-                Page::STATUS_ACTUAL => 0,
-                Page::STATUS_ERROR => 0,
+                CriticalCss::STATUS_EXPIRED => 0,
+                CriticalCss::STATUS_PENDING => 0,
+                CriticalCss::STATUS_ACTUAL => 0,
+                CriticalCss::STATUS_ERROR => 0,
             ];
 
             $queryBuilder = self::getQueryBuilder();
