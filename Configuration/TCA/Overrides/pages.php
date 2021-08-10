@@ -52,7 +52,7 @@ call_user_func(static function (string $table) {
         ]
     ]);
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, critical_css_status, --linebreak--, critical_css');
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, --linebreak--, critical_css_status, --linebreak--, critical_css');
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes($table, '--palette--;Critical css;critical_css', '', 'after:tsconfig_includes');
 }, 'pages');
