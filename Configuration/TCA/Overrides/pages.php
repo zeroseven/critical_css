@@ -31,10 +31,10 @@ call_user_func(static function (string $table) {
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Expired', \Zeroseven\CriticalCss\Model\Page::STATUS_EXPIRED, 'overlay-endtime'],
-                    ['Pending', \Zeroseven\CriticalCss\Model\Page::STATUS_PENDING, 'overlay-scheduled'],
-                    ['Actual', \Zeroseven\CriticalCss\Model\Page::STATUS_ACTUAL, 'overlay-approved'],
-                    ['Error', \Zeroseven\CriticalCss\Model\Page::STATUS_ERROR, 'overlay-warning']
+                    ['Expired', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_EXPIRED, 'overlay-endtime'],
+                    ['Pending', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_PENDING, 'overlay-scheduled'],
+                    ['Actual', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ACTUAL, 'overlay-approved'],
+                    ['Error', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ERROR, 'overlay-warning']
                 ],
                 'readOnly' => true,
                 'default' => '0'
@@ -42,7 +42,7 @@ call_user_func(static function (string $table) {
         ],
         'critical_css' => [
             'exclude' => true,
-            'label' => 'Page',
+            'label' => 'CriticalCss',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'text',

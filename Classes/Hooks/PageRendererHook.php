@@ -9,18 +9,18 @@ use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use Zeroseven\CriticalCss\Model\Page;
+use Zeroseven\CriticalCss\Model\CriticalCss;
 use Zeroseven\CriticalCss\Service\RequestService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
 class PageRendererHook
 {
-    /** @var Page */
-    protected $page;
+    /** @var CriticalCss */
+    protected $criticslCss;
 
     public function __construct()
     {
-        $this->page = Page::makeInstance();
+        $this->criticslCss = CriticalCss::makeInstance();
     }
 
     protected function ready(): bool
@@ -40,11 +40,11 @@ class PageRendererHook
             // Check for default page type
             && (int)$GLOBALS['TSFE']->type === 0
 
-            // Page is not disabled for critical styles
-            && $this->page->isEnabled()
+            // CriticalCss is not disabled for critical styles
+            && $this->criticslCss->isEnabled()
 
             // There is no error on the page
-            && $this->page->getStatus() !== Page::STATUS_ERROR
+            && $this->criticslCss->getStatus() !== CriticalCss::STATUS_ERROR
 
             // The service is enabled
             && SettingsService::isEnabled()
@@ -101,7 +101,7 @@ class PageRendererHook
 
     protected function renderCriticalCss(array &$params): void
     {
-        if ($criticalCss = $this->page->getCss()) {
+        if ($criticalCss = $this->criticslCss->getCss()) {
 
             // Move all css files to the footer
             $params['footerData'][] = $params['cssFiles'];
@@ -117,11 +117,11 @@ class PageRendererHook
     public function preProcess(array &$params, PageRenderer $pageRenderer): void
     {
         if ($this->ready()) {
-            if ($this->page->getStatus() === Page::STATUS_EXPIRED && $css = $this->collectCss($params)) {
-                RequestService::send($css, $this->page);
+            if ($this->criticslCss->getStatus() === CriticalCss::STATUS_EXPIRED && $css = $this->collectCss($params)) {
+                RequestService::send($css, $this->criticslCss);
             }
 
-            if ($this->page->getCss()) {
+            if ($this->criticslCss->getCss()) {
                 $this->cssInlineToTemporaryFile($params, $pageRenderer);
             }
         }

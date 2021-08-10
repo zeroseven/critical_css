@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
-use Zeroseven\CriticalCss\Model\Page;
+use Zeroseven\CriticalCss\Model\CriticalCss;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
@@ -63,10 +63,10 @@ class UpdateStyles implements MiddlewareInterface
                 $pageLanguage = MathUtility::canBeInterpretedAsInteger($language = $this->getHeader($request, 'X-PAGE-LANGUAGE')) ? (int)$language : null;
 
                 // Update database
-                DatabaseService::update(Page::makeInstance()
+                DatabaseService::update(CriticalCss::makeInstance()
                     ->setUid($pageUid)
                     ->setLanguage($pageLanguage)
-                    ->setStatus(Page::STATUS_ACTUAL)
+                    ->setStatus(CriticalCss::STATUS_ACTUAL)
                     ->setCss($criticalCss));
 
                 // Clear frontend cache
