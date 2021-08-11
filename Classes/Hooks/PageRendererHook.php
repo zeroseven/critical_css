@@ -34,13 +34,14 @@ class PageRendererHook
             // Check application type
             && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
 
-            // No frontend user logged in
+            // No frontend user or backend user logged in
             && empty($GLOBALS['TSFE']->fe_user->user)
+            && empty($GLOBALS['BE_USER'] ?? null)
 
             // Check for default page type
             && (int)$GLOBALS['TSFE']->type === 0
 
-            // CriticalCss is not disabled for critical styles
+            // The page is not disabled for critical styles
             && $this->criticslCss->isEnabled()
 
             // There is no error on the page
