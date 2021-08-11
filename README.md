@@ -12,6 +12,24 @@ If you change or move any content element, or update the page properties, the cr
 2. Login to the [admin panel](http://64.225.109.175:8055/admin/collections/) and generate a token.
 3. Store the authentication token via the extension configuration in TYPO3 settings module.
 
+## Flush critical css
+
+If you need to recalculate the critical css on all pages, for example because you updated the page template, you can do this with just a single click:
+
+![Flush critical css](Documentation/Images/flush_cache.png "Flush critical css")
+
+This function can also be called via a database service class:
+
+```php
+\Zeroseven\CriticalCss\Service\DatabaseService::flushAll();
+```
+
+There are good reasons why "no admins" in TYPO3 shouldn't have this cache button. If they insist on needing it (they don't) then you can set the following option (you won't) in TSconfig:
+
+```typo3_typoscript
+options.clearCache.criticalCss = 1
+```
+
 ## Monitoring
 
 A dashboard widget always gives you a good overview of how many pages are pending or expired, or just up-to-date.
