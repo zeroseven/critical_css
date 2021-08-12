@@ -16,7 +16,7 @@ use Zeroseven\CriticalCss\Model\CriticalCss;
 
 class RequestService
 {
-    protected const URL = 'http://64.225.109.175:8055/custom/ccss/v1/generate';
+    protected const URL = 'https://ccss.zeroseven.de/custom/ccss/v1/generate';
 
     protected static function getCallbackUrl(): string
     {
