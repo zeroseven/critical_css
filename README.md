@@ -36,7 +36,19 @@ A dashboard widget always gives you a good overview of how many pages are pendin
 
 ![Dashboard widget](Documentation/Images/dashboard_widget.png "Dashboard widget")
 
-## The record based detail pages problem (also called TRBDPP)
+## Disable on some pages
+
+The service calls the respective sites without POST or GET parameters or even without cookies or anything similar.
+Therefore it could make sense to deactivate the service for certain pages.
+In the backend, there's an extra button in the page properties for that.
+
+### 1. Post or get parameters
+
+For pages with content that mostly behaves dynamic, the service should be disabled.
+Let's take a search result page for example. The service will call this page without any search results, therefore making it impossible to consider the CSS of search results.
+This leaves the user with incomplete styling in the `head` area.
+
+### 2. The record based detail pages problem (also called TRBDPP)
 
 The critical css is stored in the database for each TYPO3 page.
 Unfortunately, extensions like the good old "news" extension, for example, offers one page for many records.
