@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages">
+		<header/>
+		<body>
+			<trans-unit id="pages.critical_css_disabled">
+				<source>Disable critical styles</source>
+			</trans-unit>
+			<trans-unit id="pages.critical_css_status">
+				<source>Status</source>
+			</trans-unit>
+			<trans-unit id="pages.critical_css">
+				<source>Critical CSS</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

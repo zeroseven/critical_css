@@ -6,7 +6,7 @@ call_user_func(static function (string $table) {
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns($table, [
         'critical_css_disabled' => [
             'exclude' => true,
-            'label' => 'Disable critical styles for selected page',
+            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_disabled',
             'l10n_mode' => 'exclude',
             'config' => [
                 'type' => 'check',
@@ -25,7 +25,7 @@ call_user_func(static function (string $table) {
         ],
         'critical_css_status' => [
             'exclude' => true,
-            'label' => 'Status',
+            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_status',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'select',
@@ -42,7 +42,7 @@ call_user_func(static function (string $table) {
         ],
         'critical_css' => [
             'exclude' => true,
-            'label' => 'CriticalCss',
+            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'text',
