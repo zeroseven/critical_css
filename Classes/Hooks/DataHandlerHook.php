@@ -24,7 +24,7 @@ class DataHandlerHook
 
     protected function contentUpdated(array $params, DataHandler $dataHandler): ?CriticalCss
     {
-        if ($params['table'] === 'tt_content' && empty($dataHandler->cmdmap) && $pageUid = (int)$params['uid_page']) {
+        if (($params['table'] ?? null) === 'tt_content' && empty($dataHandler->cmdmap) && $pageUid = (int)($params['uid_page'] ?? 0)) {
             $languageField = $GLOBALS['TCA'][$params['table']]['ctrl']['languageField'];
             $pageLanguage = $dataHandler->datamap[$params['table']][$params['uid']][$languageField] ?? null;
 
@@ -36,8 +36,8 @@ class DataHandlerHook
 
     protected function pageUpdated(array $params): ?CriticalCss
     {
-        if ($params['table'] === 'pages' && $pageUid = (int)$params['uid_page']) {
-            if ($pageUid === (int)$params['uid']) {
+        if (($params['table'] ?? null) === 'pages' && $pageUid = (int)($params['uid_page'] ?? 0)) {
+            if ($pageUid === (int)($params['uid'] ?? 0)) {
                 return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(0);
             }
 
@@ -68,7 +68,7 @@ class DataHandlerHook
 
     public function clearCachePostProc(array &$params, DataHandler $dataHandler): void
     {
-        $cacheCmd = $params['cacheCmd'];
+        $cacheCmd = $params['cacheCmd'] ?? null;
 
         // Do nothing on some conditions
         if (

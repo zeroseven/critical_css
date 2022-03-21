@@ -40,9 +40,9 @@ class CriticalCss
 
         $this->uid = (int)($row['uid'] ?: 0);
         $this->language = isset($row['sys_language_uid']) ? (int)$row['sys_language_uid'] : null;
-        $this->css = (string)($row['critical_css'] ?: '');
-        $this->disabled = (bool)($row['critical_css_disabled'] ?: false);
-        $this->status = (int)($row['critical_css_status'] ?: 0);
+        $this->css = (string)($row['critical_css'] ?? '');
+        $this->disabled = (bool)($row['critical_css_disabled'] ?? false);
+        $this->status = (int)($row['critical_css_status'] ?? 0);
     }
 
     public static function makeInstance(array $row = null): self

@@ -59,7 +59,7 @@ class PageRendererHook
         $styles = [];
 
         // Collect included files
-        foreach ($params['cssFiles'] as $cssFile) {
+        foreach ($params['cssFiles'] ?? [] as $cssFile) {
             if (empty($cssFile['allWrap'])
                 && preg_match(SettingsService::getAllowedMediaTypes(), $cssFile['media'])
                 && ($path = $cssFile['file'] ?? null)
