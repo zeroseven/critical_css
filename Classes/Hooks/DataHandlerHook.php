@@ -59,7 +59,7 @@ class DataHandlerHook
 
     protected function pageFlushed(array $params): ?CriticalCss
     {
-        if($pageUid = (int)($params['cacheCmd'] ?? 0)) {
+        if ($pageUid = (int)($params['cacheCmd'] ?? 0)) {
             return CriticalCss::makeInstance()->setUid((int)$pageUid)->setLanguage(null);
         }
 
