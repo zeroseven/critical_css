@@ -15,7 +15,7 @@ class DataHandlerHook
 {
     protected function contentMoved(array $params, DataHandler $dataHandler): ?CriticalCss
     {
-        if (isset($dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)$params['uid_page']) {
+        if (isset($dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)($params['uid_page'] ?? 0)) {
             return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(null);
         }
 
@@ -25,7 +25,7 @@ class DataHandlerHook
     protected function contentUpdated(array $params, DataHandler $dataHandler): ?CriticalCss
     {
         if (($params['table'] ?? null) === 'tt_content' && empty($dataHandler->cmdmap) && $pageUid = (int)($params['uid_page'] ?? 0)) {
-            $languageField = $GLOBALS['TCA'][$params['table']]['ctrl']['languageField'];
+            $languageField = ($GLOBALS['TCA'][$params['table']]['ctrl']['languageField'] ?? '');
             $pageLanguage = $dataHandler->datamap[$params['table']][$params['uid']][$languageField] ?? null;
 
             return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage($pageLanguage === null ? null : (int)$pageLanguage);
@@ -36,16 +36,16 @@ class DataHandlerHook
 
     protected function pageUpdated(array $params): ?CriticalCss
     {
-        if (($params['table'] ?? null) === 'pages' && $pageUid = (int)($params['uid_page'] ?? 0)) {
+        if (($table = $params['table'] ?? null) === 'pages' && $pageUid = (int)($params['uid_page'] ?? 0)) {
             if ($pageUid === (int)($params['uid'] ?? 0)) {
                 return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(0);
             }
 
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($params['table']);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
             $queryBuilder->getRestrictions()->removeAll();
             $languageUids = $queryBuilder
-                ->select($GLOBALS['TCA'][$params['table']]['ctrl']['languageField'])
-                ->from($params['table'])
+                ->select($GLOBALS['TCA'][$table]['ctrl']['languageField'])
+                ->from($table)
                 ->where($queryBuilder->expr()->eq('uid', (int)$params['uid']))
                 ->setMaxResults(1)
                 ->execute()
