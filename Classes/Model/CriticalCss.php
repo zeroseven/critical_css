@@ -38,7 +38,7 @@ class CriticalCss
             $row = $GLOBALS['TSFE']->page;
         }
 
-        $this->uid = (int)($row['uid'] ?: 0);
+        $this->uid = (int)($row['uid'] ?? 0);
         $this->language = isset($row['sys_language_uid']) ? (int)$row['sys_language_uid'] : null;
         $this->css = (string)($row['critical_css'] ?? '');
         $this->disabled = (bool)($row['critical_css_disabled'] ?? false);
