@@ -25,7 +25,7 @@ class DataHandlerHook
     protected function contentUpdated(array $params, DataHandler $dataHandler): ?CriticalCss
     {
         if (($params['table'] ?? null) === 'tt_content' && empty($dataHandler->cmdmap) && $pageUid = (int)($params['uid_page'] ?? 0)) {
-            $languageField = ($GLOBALS['TCA'][$params['table']]['ctrl']['languageField'] ?? '');
+            $languageField = $GLOBALS['TCA'][$params['table']]['ctrl']['languageField'];
             $pageLanguage = $dataHandler->datamap[$params['table']][$params['uid']][$languageField] ?? null;
 
             return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage($pageLanguage === null ? null : (int)$pageLanguage);
