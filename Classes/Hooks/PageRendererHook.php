@@ -36,7 +36,7 @@ class PageRendererHook
 
             // No frontend user or backend user logged in
             && empty($GLOBALS['TSFE']->fe_user->user)
-            && empty($GLOBALS['BE_USER'] ?? null)
+            && empty($GLOBALS['BE_USER'])
 
             // Check for default page type
             && (int)$GLOBALS['TSFE']->type === 0

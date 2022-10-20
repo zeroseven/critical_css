@@ -26,7 +26,9 @@ class DatabaseService
         // All translations of a record
         if ($criticalCss->getLanguage() === null) {
             $queryBuilder->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
-            $queryBuilder->orWhere($queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $criticalCss->getUid()));
+            if (isset($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'])) {
+                $queryBuilder->orWhere($queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $criticalCss->getUid()));
+            }
         }
 
         // Default language only
@@ -35,7 +37,7 @@ class DatabaseService
         }
 
         // Specific language
-        if ($criticalCss->getLanguage()) {
+        if ($criticalCss->getLanguage() && isset($GLOBALS['TCA'][self::TABLE]['ctrl']['languageField'], $GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'])) {
             $queryBuilder->where(
                 $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['languageField'], $criticalCss->getLanguage()),
                 $queryBuilder->expr()->eq($GLOBALS['TCA'][self::TABLE]['ctrl']['transOrigPointerField'], $criticalCss->getUid())

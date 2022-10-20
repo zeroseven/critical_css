@@ -15,7 +15,7 @@ class DataHandlerHook
 {
     protected function contentMoved(array $params, DataHandler $dataHandler): ?CriticalCss
     {
-        if (isset($dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)($params['uid_page'] ?? 0)) {
+        if (isset($params['table'],$params['uid'], $params['uid_page'], $dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)$params['uid_page']) {
             return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(null);
         }
 
@@ -41,6 +41,9 @@ class DataHandlerHook
                 return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(0);
             }
 
+            if (!isset($GLOBALS['TCA'][$table]['ctrl']['languageField'])) {
+                return null;
+            }
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
             $queryBuilder->getRestrictions()->removeAll();
             $languageUids = $queryBuilder
