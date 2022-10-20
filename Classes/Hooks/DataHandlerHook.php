@@ -41,9 +41,6 @@ class DataHandlerHook
                 return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(0);
             }
 
-            if (!isset($GLOBALS['TCA'][$table]['ctrl']['languageField'])) {
-                return null;
-            }
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
             $queryBuilder->getRestrictions()->removeAll();
             $languageUids = $queryBuilder
