@@ -7,6 +7,7 @@ namespace Zeroseven\CriticalCss\Hooks;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Zeroseven\CriticalCss\EventListener\ModifyClearCacheActions;
 use Zeroseven\CriticalCss\Model\CriticalCss;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
@@ -100,7 +101,7 @@ class DataHandlerHook
         }
 
         // Reset all critical styles.
-        if ($cacheCmd === ClearCacheToolbarItemHook::CACHE_CMD || $cacheCmd === 'all') {
+        if ($cacheCmd === ModifyClearCacheActions::CACHE_CMD || $cacheCmd === 'all') {
             DatabaseService::flushAll();
         }
     }
