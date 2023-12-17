@@ -15,8 +15,7 @@ use Zeroseven\CriticalCss\Service\SettingsService;
 
 class PageRendererHook
 {
-    /** @var CriticalCss */
-    protected $criticslCss;
+    protected CriticalCss $criticslCss;
 
     public function __construct()
     {

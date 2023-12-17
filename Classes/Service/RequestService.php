@@ -20,14 +20,14 @@ class RequestService
     protected static function getCallbackUrl(): string
     {
         return (string)GeneralUtility::makeInstance(Uri::class)
-            ->withScheme(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
+            ?->withScheme(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
             ->withHost($_SERVER['HTTP_HOST'] ?? '')
             ->withPath(UpdateStyles::PATH);
     }
 
     protected static function getPageUrl(CriticalCss $criticalCss): string
     {
-        return GeneralUtility::makeInstance(UriBuilder::class)->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($criticalCss->getUid())->build();
+        return GeneralUtility::makeInstance(UriBuilder::class)?->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($criticalCss->getUid())->build();
     }
 
     public static function send(string $css, CriticalCss $criticalCss): void
@@ -41,11 +41,11 @@ class RequestService
             ->withHeader('X-PAGE-LANGUAGE', (string)$criticalCss->getLanguage());
 
         try {
-            GeneralUtility::makeInstance(GuzzleClientFactory::class)->getClient()->send($request, ['body' => $css]);
+            GeneralUtility::makeInstance(GuzzleClientFactory::class)?->getClient()->send($request, ['body' => $css]);
             DatabaseService::updateStatus($criticalCss->setStatus(CriticalCss::STATUS_PENDING));
         } catch (GuzzleException $e) {
             DatabaseService::updateStatus($criticalCss->setStatus(CriticalCss::STATUS_ERROR));
-            LogService::systemError(sprintf("%s. HTTP headers: %s. Body: %sb", $e->getMessage(), json_encode(array_diff_key($request->getHeaders(), ['X-TOKEN' => false])), mb_strlen($css)));
+            LogService::systemError(sprintf("%s. HTTP headers: %s. Body: %sb", $e->getMessage(), json_encode(array_diff_key($request->getHeaders(), ['X-TOKEN' => false]), JSON_THROW_ON_ERROR), mb_strlen($css)));
         }
     }
 }

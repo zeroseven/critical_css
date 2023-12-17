@@ -3,6 +3,7 @@
 namespace Zeroseven\CriticalCss\EventListener;
 
 use TYPO3\CMS\Backend\Backend\Event\ModifyClearCacheActionsEvent;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -29,14 +30,15 @@ final class ModifyClearCacheActions
         return (bool)($userTsConfig['options.']['clearCache.']['criticalCss'] ?? $fallback);
     }
 
+    /** @throws RouteNotFoundException */
     public function __invoke(ModifyClearCacheActionsEvent $event): void
     {
-        if (SettingsService::isEnabled() && ($this->isEnabled() || $this->isAdmin() && $this->isEnabled(true))) {
+        if (SettingsService::isEnabled() && ($this->isEnabled() || ($this->isAdmin() && $this->isEnabled(true)))) {
             $event->addCacheAction([
                 'id' => 'critical_css',
                 'title' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.title',
                 'description' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.description',
-                'href' => (string)GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('tce_db', ['cacheCmd' => self::CACHE_CMD]),
+                'href' => (string)GeneralUtility::makeInstance(UriBuilder::class)?->buildUriFromRoute('tce_db', ['cacheCmd' => self::CACHE_CMD]),
                 'iconIdentifier' => 'apps-toolbar-menu-cache',
             ]);
 

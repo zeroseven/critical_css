@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Zeroseven\CriticalCss\Service;
 
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -11,9 +13,15 @@ class SettingsService
 {
     public const EXTENSION_KEY = 'z7_critical_css';
 
-    protected static function getExtensionConfiguration(string $key = '')
+    protected static function getExtensionConfiguration(string $key = ''): mixed
     {
-        return GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(self::EXTENSION_KEY, $key);
+        try {
+            return GeneralUtility::makeInstance(ExtensionConfiguration::class)?->get(self::EXTENSION_KEY, $key);
+        } catch (ExtensionConfigurationExtensionNotConfiguredException | ExtensionConfigurationPathDoesNotExistException $e) {
+            LogService::systemError($e->getMessage() . $e->getCode());
+        }
+
+        return null;
     }
 
     public static function getAuthenticationToken(): string
