@@ -30,6 +30,7 @@ class RequestService
         return GeneralUtility::makeInstance(UriBuilder::class)?->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($criticalCss->getUid())->build();
     }
 
+    /** @throws \JsonException */
     public static function send(string $css, CriticalCss $criticalCss): void
     {
         $request = GeneralUtility::makeInstance(RequestFactory::class)?->createRequest('post', self::URL)

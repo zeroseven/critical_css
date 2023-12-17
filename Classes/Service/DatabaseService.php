@@ -65,12 +65,12 @@ class DatabaseService
             }
         }
 
-        $queryBuilder->executeQuery();
+        $queryBuilder->executeStatement();
     }
 
     public static function updateStatus(CriticalCss $criticalCss): void
     {
-        self::getQueryBuilder($criticalCss)->update(self::TABLE)->set('critical_css_status', $criticalCss->getStatus())->executeQuery();
+        self::getQueryBuilder($criticalCss)->update(self::TABLE)->set('critical_css_status', $criticalCss->getStatus())->executeStatement();
     }
 
     public static function flushAll(): void
@@ -79,7 +79,7 @@ class DatabaseService
             ->update(self::TABLE)
             ->set('critical_css_status', 0)
             ->set('critical_css', '')
-            ->executeQuery();
+            ->executeStatement();
     }
 
     /** @throws Exception */

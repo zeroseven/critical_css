@@ -114,6 +114,7 @@ class PageRendererHook
         }
     }
 
+    /** @throws \JsonException */
     public function preProcess(array &$params, PageRenderer $pageRenderer): void
     {
         if ($this->ready()) {
