@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Zeroseven\CriticalCss\Hooks;
 
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use Zeroseven\CriticalCss\Model\CriticalCss;
 use Zeroseven\CriticalCss\Service\RequestService;
@@ -53,6 +55,23 @@ class PageRendererHook
             && SettingsService::getAuthenticationToken();
     }
 
+    protected function getAbsoluteFilePath(string $path): ?string
+    {
+        if ($path === '') {
+            return null;
+        }
+
+        if (($file = GeneralUtility::getFileAbsFileName($path)) && file_exists($file)) {
+            return $file;
+        }
+
+        if (PathUtility::isAbsolutePath($path) && ($file = Environment::getPublicPath() . '/' . ltrim($path, '/')) && file_exists($file)) {
+            return $file;
+        }
+
+        return null;
+    }
+
     protected function collectCss(array $params): ?string
     {
         $styles = [];
@@ -61,9 +80,7 @@ class PageRendererHook
         foreach ($params['cssFiles'] ?? [] as $cssFile) {
             if (empty($cssFile['allWrap'] ?? null)
                 && preg_match(SettingsService::getAllowedMediaTypes(), $cssFile['media'])
-                && ($path = $cssFile['file'] ?? null)
-                && ($file = GeneralUtility::getFileAbsFileName($path))
-                && file_exists($file)
+                && ($file = $this->getAbsoluteFilePath($cssFile['file'] ?? null))
                 && $content = file_get_contents($file)
             ) {
                 ($cssFile['forceOnTop'] ?? null) ? array_unshift($styles, $content) : array_push($styles, $content);
@@ -117,6 +134,7 @@ class PageRendererHook
     /** @throws \JsonException */
     public function preProcess(array &$params, PageRenderer $pageRenderer): void
     {
+        die($this->collectCss($params));
         if ($this->ready()) {
             if ($this->criticslCss->getStatus() === CriticalCss::STATUS_EXPIRED && $css = $this->collectCss($params)) {
                 RequestService::send($css, $this->criticslCss);
