@@ -134,7 +134,6 @@ class PageRendererHook
     /** @throws \JsonException */
     public function preProcess(array &$params, PageRenderer $pageRenderer): void
     {
-        die($this->collectCss($params));
         if ($this->ready()) {
             if ($this->criticslCss->getStatus() === CriticalCss::STATUS_EXPIRED && $css = $this->collectCss($params)) {
                 RequestService::send($css, $this->criticslCss);
