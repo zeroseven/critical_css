@@ -10,27 +10,15 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 class CriticalCss
 {
     public const STATUS_EXPIRED = 0;
-
     public const STATUS_PENDING = 1;
-
     public const STATUS_ACTUAL = 2;
-
     public const STATUS_ERROR = 3;
 
-    /** @var int */
-    protected $uid;
-
-    /** @var int */
-    protected $language;
-
-    /** @var string */
-    protected $css;
-
-    /** @var bool */
-    protected $disabled;
-
-    /** @var int */
-    protected $status;
+    protected int $uid;
+    protected ?int $language;
+    protected string $css;
+    protected bool $disabled;
+    protected int $status;
 
     public function __construct(array $row = null)
     {

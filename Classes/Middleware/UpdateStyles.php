@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheGroupException;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -22,10 +23,13 @@ class UpdateStyles implements MiddlewareInterface
 
     protected function clearFrontendCache(int $pageUid): void
     {
-        GeneralUtility::makeInstance(CacheManager::class)->flushCachesInGroupByTags('pages', [
-            'ignore_critical_css',
-            'pageId_' . $pageUid
-        ]);
+        try {
+            GeneralUtility::makeInstance(CacheManager::class)?->flushCachesInGroupByTags('pages', [
+                'ignore_critical_css',
+                'pageId_' . $pageUid
+            ]);
+        } catch (NoSuchCacheGroupException $e) {
+        }
     }
 
     protected function getHeader(ServerRequestInterface $request, string $key): ?string

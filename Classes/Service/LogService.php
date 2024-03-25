@@ -16,7 +16,7 @@ class LogService
 
     protected static function write(string $message, int $code, int $type = null): void
     {
-        GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::TABLE)->insert(self::TABLE, [
+        GeneralUtility::makeInstance(ConnectionPool::class)?->getConnectionForTable(self::TABLE)->insert(self::TABLE, [
             'type' => $type ?: Type::ERROR,
             'error' => $code,
             'details' => $message,

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Zeroseven\CriticalCss\Hooks;
 
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Zeroseven\CriticalCss\EventListener\ModifyClearCacheActions;
 use Zeroseven\CriticalCss\Model\CriticalCss;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
@@ -15,7 +17,7 @@ class DataHandlerHook
 {
     protected function contentMoved(array $params, DataHandler $dataHandler): ?CriticalCss
     {
-        if (isset($params['table'],$params['uid'], $params['uid_page'], $dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)$params['uid_page']) {
+        if (isset($params['table'], $params['uid'], $params['uid_page'], $dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)$params['uid_page']) {
             return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(null);
         }
 
@@ -34,6 +36,7 @@ class DataHandlerHook
         return null;
     }
 
+    /** @throws Exception */
     protected function pageUpdated(array $params): ?CriticalCss
     {
         if (($table = $params['table'] ?? null) === 'pages' && $pageUid = (int)($params['uid_page'] ?? 0)) {
@@ -41,14 +44,14 @@ class DataHandlerHook
                 return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(0);
             }
 
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)?->getQueryBuilderForTable($table);
             $queryBuilder->getRestrictions()->removeAll();
             $languageUids = $queryBuilder
                 ->select($GLOBALS['TCA'][$table]['ctrl']['languageField'])
                 ->from($table)
                 ->where($queryBuilder->expr()->eq('uid', (int)$params['uid']))
                 ->setMaxResults(1)
-                ->execute()
+                ->executeQuery()
                 ->fetchFirstColumn();
 
             return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(empty($languageUids) ? null : (int)$languageUids[0]);
@@ -66,6 +69,7 @@ class DataHandlerHook
         return null;
     }
 
+    /** @throws Exception */
     public function clearCachePostProc(array &$params, DataHandler $dataHandler): void
     {
         $cacheCmd = $params['cacheCmd'] ?? null;
@@ -100,7 +104,7 @@ class DataHandlerHook
         }
 
         // Reset all critical styles.
-        if ($cacheCmd === ClearCacheToolbarItemHook::CACHE_CMD || $cacheCmd === 'all') {
+        if ($cacheCmd === ModifyClearCacheActions::CACHE_CMD || $cacheCmd === 'all') {
             DatabaseService::flushAll();
         }
     }

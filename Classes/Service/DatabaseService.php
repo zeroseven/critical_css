@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zeroseven\CriticalCss\Service;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\InvalidFieldNameException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -18,7 +19,7 @@ class DatabaseService
     protected static function getQueryBuilder(CriticalCss $criticalCss = null): QueryBuilder
     {
         if ($criticalCss === null) {
-            return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::TABLE);
+            return GeneralUtility::makeInstance(ConnectionPool::class)?->getQueryBuilderForTable(self::TABLE);
         }
 
         $queryBuilder = self::getQueryBuilder();
@@ -56,43 +57,32 @@ class DatabaseService
     {
         $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
 
-        try {
-            $queryBuilder = self::getQueryBuilder($criticalCss)->update(self::TABLE);
+        $queryBuilder = self::getQueryBuilder($criticalCss)->update(self::TABLE);
 
-            foreach ($criticalCss->toArray() as $key => $value) {
-                if (in_array($key, $allowedFields, true)) {
-                    $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
-                }
+        foreach ($criticalCss->toArray() as $key => $value) {
+            if (in_array($key, $allowedFields, true)) {
+                $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
             }
-
-            $queryBuilder->execute();
-        } catch (InvalidFieldNameException $exception) {
-            self::log($exception);
         }
+
+        $queryBuilder->executeStatement();
     }
 
     public static function updateStatus(CriticalCss $criticalCss): void
     {
-        try {
-            self::getQueryBuilder($criticalCss)->update(self::TABLE)->set('critical_css_status', $criticalCss->getStatus())->execute();
-        } catch (InvalidFieldNameException $exception) {
-            self::log($exception);
-        }
+        self::getQueryBuilder($criticalCss)->update(self::TABLE)->set('critical_css_status', $criticalCss->getStatus())->executeStatement();
     }
 
     public static function flushAll(): void
     {
-        try {
-            self::getQueryBuilder()
-                ->update(self::TABLE)
-                ->set('critical_css_status', 0)
-                ->set('critical_css', '')
-                ->execute();
-        } catch (InvalidFieldNameException $exception) {
-            self::log($exception);
-        }
+        self::getQueryBuilder()
+            ->update(self::TABLE)
+            ->set('critical_css_status', 0)
+            ->set('critical_css', '')
+            ->executeStatement();
     }
 
+    /** @throws Exception */
     public static function countStatus(): array
     {
         try {
@@ -119,7 +109,7 @@ class DatabaseService
                 ]))
                 ->orderBy('critical_css_status')
                 ->groupBy('critical_css_status')
-                ->execute()
+                ->executeQuery()
                 ->fetchAllAssociative();
 
             foreach ($results as $result) {

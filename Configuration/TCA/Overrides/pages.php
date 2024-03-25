@@ -1,6 +1,6 @@
 <?php
 
-defined('TYPO3_MODE') || die('💐');
+defined('TYPO3') || die('💐');
 
 call_user_func(static function (string $table) {
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns($table, [
@@ -31,10 +31,26 @@ call_user_func(static function (string $table) {
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Expired', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_EXPIRED, 'overlay-endtime'],
-                    ['Pending', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_PENDING, 'overlay-scheduled'],
-                    ['Actual', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ACTUAL, 'overlay-approved'],
-                    ['Error', \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ERROR, 'overlay-warning']
+                    [
+                        'label' => 'Expired',
+                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_EXPIRED,
+                        'icon' => 'overlay-endtime'
+                    ],
+                    [
+                        'label' => 'Pending',
+                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_PENDING,
+                        'icon' => 'overlay-scheduled'
+                    ],
+                    [
+                        'label' => 'Actual',
+                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ACTUAL,
+                        'icon' => 'overlay-approved'
+                    ],
+                    [
+                        'label' => 'Error',
+                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ERROR,
+                        'icon' => 'overlay-warning
+                    ']
                 ],
                 'readOnly' => true,
                 'default' => '0'
