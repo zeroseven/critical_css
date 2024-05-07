@@ -7,6 +7,7 @@ namespace Zeroseven\CriticalCss\Hooks;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -91,6 +92,14 @@ class PageRendererHook
         foreach ($params['cssInline'] ?? [] as $key => $value) {
             if ($params['cssInline'][$key]['code'] ?? null) {
                 $styles[] = $params['cssInline'][$key]['code'];
+            }
+        }
+
+        $assetCollector = GeneralUtility::makeInstance(AssetCollector::class);
+        $assets = $assetCollector->getStyleSheets();
+        foreach ($assets as $asset) {
+            if ($asset['source']) {
+                $styles[] = file_get_contents($asset['source']);
             }
         }
 
