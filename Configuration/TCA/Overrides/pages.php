@@ -6,7 +6,7 @@ call_user_func(static function (string $table) {
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns($table, [
         'critical_css_disabled' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_disabled',
+            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_disabled',
             'l10n_mode' => 'exclude',
             'config' => [
                 'type' => 'check',
@@ -25,7 +25,7 @@ call_user_func(static function (string $table) {
         ],
         'critical_css_status' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_status',
+            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_status',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'select',
@@ -58,7 +58,7 @@ call_user_func(static function (string $table) {
         ],
         'critical_css' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css',
+            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'text',
@@ -68,7 +68,7 @@ call_user_func(static function (string $table) {
         ],
         'lazy_css' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.lazy_css',
+            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.lazy_css',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'text',

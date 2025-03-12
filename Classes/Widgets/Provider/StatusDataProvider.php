@@ -17,7 +17,7 @@ class StatusDataProvider implements ChartDataProviderInterface
 
         return [
             'labels' => array_map(static function ($status) {
-                return LocalizationUtility::translate('LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.label.' . $status);
+                return LocalizationUtility::translate('LLL:EXT:critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.label.' . $status);
             }, array_keys($result)),
             'datasets' => [
                 [
