@@ -7,7 +7,7 @@ namespace Zeroseven\CriticalCss\Model;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class CriticalCss
+class Page
 {
     public const STATUS_EXPIRED = 0;
     public const STATUS_PENDING = 1;
@@ -20,7 +20,7 @@ class CriticalCss
     protected bool $disabled;
     protected int $status;
 
-    public function __construct(array $row = null)
+    public function __construct(?array $row = null)
     {
         if (empty($row) && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController) {
             $row = $GLOBALS['TSFE']->page;
@@ -33,7 +33,7 @@ class CriticalCss
         $this->status = (int)($row['critical_css_status'] ?? 0);
     }
 
-    public static function makeInstance(array $row = null): self
+    public static function makeInstance(?array $row = null): self
     {
         return GeneralUtility::makeInstance(self::class, $row);
     }
@@ -63,7 +63,7 @@ class CriticalCss
         return $this->language;
     }
 
-    public function setLanguage(int $language = null): self
+    public function setLanguage(?int $language = null): self
     {
         $this->language = $language;
         return $this;

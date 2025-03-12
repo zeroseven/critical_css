@@ -9,39 +9,39 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Zeroseven\CriticalCss\EventListener\ModifyClearCacheActions;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
 class DataHandlerHook
 {
-    protected function contentMoved(array $params, DataHandler $dataHandler): ?CriticalCss
+    protected function contentMoved(array $params, DataHandler $dataHandler): ?Page
     {
         if (isset($params['table'], $params['uid'], $params['uid_page'], $dataHandler->cmdmap[$params['table']][$params['uid']]['move']) && $pageUid = (int)$params['uid_page']) {
-            return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(null);
+            return Page::makeInstance()->setUid($pageUid)->setLanguage(null);
         }
 
         return null;
     }
 
-    protected function contentUpdated(array $params, DataHandler $dataHandler): ?CriticalCss
+    protected function contentUpdated(array $params, DataHandler $dataHandler): ?Page
     {
         if (($params['table'] ?? null) === 'tt_content' && empty($dataHandler->cmdmap) && $pageUid = (int)($params['uid_page'] ?? 0)) {
             $languageField = $GLOBALS['TCA'][$params['table']]['ctrl']['languageField'];
             $pageLanguage = $dataHandler->datamap[$params['table']][$params['uid']][$languageField] ?? null;
 
-            return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage($pageLanguage === null ? null : (int)$pageLanguage);
+            return Page::makeInstance()->setUid($pageUid)->setLanguage($pageLanguage === null ? null : (int)$pageLanguage);
         }
 
         return null;
     }
 
     /** @throws Exception */
-    protected function pageUpdated(array $params): ?CriticalCss
+    protected function pageUpdated(array $params): ?Page
     {
         if (($table = $params['table'] ?? null) === 'pages' && $pageUid = (int)($params['uid_page'] ?? 0)) {
             if ($pageUid === (int)($params['uid'] ?? 0)) {
-                return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(0);
+                return Page::makeInstance()->setUid($pageUid)->setLanguage(0);
             }
 
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)?->getQueryBuilderForTable($table);
@@ -54,16 +54,16 @@ class DataHandlerHook
                 ->executeQuery()
                 ->fetchFirstColumn();
 
-            return CriticalCss::makeInstance()->setUid($pageUid)->setLanguage(empty($languageUids) ? null : (int)$languageUids[0]);
+            return Page::makeInstance()->setUid($pageUid)->setLanguage(empty($languageUids) ? null : (int)$languageUids[0]);
         }
 
         return null;
     }
 
-    protected function pageFlushed(array $params): ?CriticalCss
+    protected function pageFlushed(array $params): ?Page
     {
         if ($pageUid = (int)($params['cacheCmd'] ?? 0)) {
-            return CriticalCss::makeInstance()->setUid((int)$pageUid)->setLanguage(null);
+            return Page::makeInstance()->setUid((int)$pageUid)->setLanguage(null);
         }
 
         return null;
@@ -84,23 +84,23 @@ class DataHandlerHook
         }
 
         // Content element was moved
-        if ($criticalCss = $this->contentMoved($params, $dataHandler)) {
-            DatabaseService::updateStatus($criticalCss->setStatus(CriticalCss::STATUS_EXPIRED));
+        if ($page = $this->contentMoved($params, $dataHandler)) {
+            DatabaseService::updateStatus($page->setStatus(Page::STATUS_EXPIRED));
         }
 
         // Content element has been updated
-        if ($criticalCss = $this->contentUpdated($params, $dataHandler)) {
-            DatabaseService::updateStatus($criticalCss->setStatus(CriticalCss::STATUS_EXPIRED));
+        if ($page = $this->contentUpdated($params, $dataHandler)) {
+            DatabaseService::updateStatus($page->setStatus(Page::STATUS_EXPIRED));
         }
 
         // CriticalCss has been updated
-        if ($criticalCss = $this->pageUpdated($params)) {
-            DatabaseService::updateStatus($criticalCss->setStatus(CriticalCss::STATUS_EXPIRED));
+        if ($page = $this->pageUpdated($params)) {
+            DatabaseService::updateStatus($page->setStatus(Page::STATUS_EXPIRED));
         }
 
         // The "clear page cache" button was pressed
-        if ($criticalCss = $this->pageFlushed($params)) {
-            DatabaseService::updateStatus($criticalCss->setStatus(CriticalCss::STATUS_EXPIRED));
+        if ($page = $this->pageFlushed($params)) {
+            DatabaseService::updateStatus($page->setStatus(Page::STATUS_EXPIRED));
         }
 
         // Reset all critical styles.

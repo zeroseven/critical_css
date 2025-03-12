@@ -10,15 +10,15 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Page;
 
 class DatabaseService
 {
     protected const TABLE = 'pages';
 
-    protected static function getQueryBuilder(CriticalCss $criticalCss = null): QueryBuilder
+    protected static function getQueryBuilder(?Page $page = null): QueryBuilder
     {
-        if ($criticalCss === null) {
+        if ($page === null) {
             return GeneralUtility::makeInstance(ConnectionPool::class)?->getQueryBuilderForTable(self::TABLE);
         }
 
@@ -27,21 +27,21 @@ class DatabaseService
         $languageField = $GLOBALS['TCA'][self::TABLE]['ctrl']['languageField'];
 
         // All translations of a record
-        if ($criticalCss->getLanguage() === null) {
-            $queryBuilder->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
-            $queryBuilder->orWhere($queryBuilder->expr()->eq($transOrigPointerField, $criticalCss->getUid()));
+        if ($page->getLanguage() === null) {
+            $queryBuilder->where($queryBuilder->expr()->eq('uid', $page->getUid()));
+            $queryBuilder->orWhere($queryBuilder->expr()->eq($transOrigPointerField, $page->getUid()));
         }
 
         // Default language only
-        if ($criticalCss->getLanguage() === 0) {
-            $queryBuilder->where($queryBuilder->expr()->eq('uid', $criticalCss->getUid()));
+        if ($page->getLanguage() === 0) {
+            $queryBuilder->where($queryBuilder->expr()->eq('uid', $page->getUid()));
         }
 
         // Specific language
-        if ($criticalCss->getLanguage()) {
+        if ($page->getLanguage()) {
             $queryBuilder->where(
-                $queryBuilder->expr()->eq($languageField, $criticalCss->getLanguage()),
-                $queryBuilder->expr()->eq($transOrigPointerField, $criticalCss->getUid())
+                $queryBuilder->expr()->eq($languageField, $page->getLanguage()),
+                $queryBuilder->expr()->eq($transOrigPointerField, $page->getUid())
             );
         }
 
@@ -53,13 +53,13 @@ class DatabaseService
         LogService::systemError($exception->getMessage() . ' (' . self::class . ': ' . debug_backtrace()[1]['function'] . ')');
     }
 
-    public static function update(CriticalCss $criticalCss): void
+    public static function update(Page $page): void
     {
         $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
 
-        $queryBuilder = self::getQueryBuilder($criticalCss)->update(self::TABLE);
+        $queryBuilder = self::getQueryBuilder($page)->update(self::TABLE);
 
-        foreach ($criticalCss->toArray() as $key => $value) {
+        foreach ($page->toArray() as $key => $value) {
             if (in_array($key, $allowedFields, true)) {
                 $queryBuilder->set($key, (string)(is_bool($value) ? (int)$value : $value));
             }
@@ -68,9 +68,9 @@ class DatabaseService
         $queryBuilder->executeStatement();
     }
 
-    public static function updateStatus(CriticalCss $criticalCss): void
+    public static function updateStatus(Page $page): void
     {
-        self::getQueryBuilder($criticalCss)->update(self::TABLE)->set('critical_css_status', $criticalCss->getStatus())->executeStatement();
+        self::getQueryBuilder($page)->update(self::TABLE)->set('critical_css_status', $page->getStatus())->executeStatement();
     }
 
     public static function flushAll(): void
@@ -87,10 +87,10 @@ class DatabaseService
     {
         try {
             $data = [
-                CriticalCss::STATUS_EXPIRED => 0,
-                CriticalCss::STATUS_PENDING => 0,
-                CriticalCss::STATUS_ACTUAL => 0,
-                CriticalCss::STATUS_ERROR => 0,
+                Page::STATUS_EXPIRED => 0,
+                Page::STATUS_PENDING => 0,
+                Page::STATUS_ACTUAL => 0,
+                Page::STATUS_ERROR => 0,
             ];
 
             $queryBuilder = self::getQueryBuilder();

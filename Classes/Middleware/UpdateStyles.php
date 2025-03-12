@@ -13,7 +13,7 @@ use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheGroupException;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
@@ -67,10 +67,10 @@ class UpdateStyles implements MiddlewareInterface
                 $pageLanguage = MathUtility::canBeInterpretedAsInteger($language = $this->getHeader($request, 'X-PAGE-LANGUAGE')) ? (int)$language : null;
 
                 // Update database
-                DatabaseService::update(CriticalCss::makeInstance()
+                DatabaseService::update(Page::makeInstance()
                     ->setUid($pageUid)
                     ->setLanguage($pageLanguage)
-                    ->setStatus(CriticalCss::STATUS_ACTUAL)
+                    ->setStatus(Page::STATUS_ACTUAL)
                     ->setCss($criticalCss));
 
                 // Clear frontend cache
