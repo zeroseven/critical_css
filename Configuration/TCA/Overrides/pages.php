@@ -33,24 +33,24 @@ call_user_func(static function (string $table) {
                 'items' => [
                     [
                         'label' => 'Expired',
-                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_EXPIRED,
+                        'value' => \Zeroseven\CriticalCss\Model\Page::STATUS_EXPIRED,
                         'icon' => 'overlay-endtime'
                     ],
                     [
                         'label' => 'Pending',
-                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_PENDING,
+                        'value' => \Zeroseven\CriticalCss\Model\Page::STATUS_PENDING,
                         'icon' => 'overlay-scheduled'
                     ],
                     [
                         'label' => 'Actual',
-                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ACTUAL,
+                        'value' => \Zeroseven\CriticalCss\Model\Page::STATUS_ACTUAL,
                         'icon' => 'overlay-approved'
                     ],
                     [
                         'label' => 'Error',
-                        'value' => \Zeroseven\CriticalCss\Model\CriticalCss::STATUS_ERROR,
-                        'icon' => 'overlay-warning
-                    ']
+                        'value' => \Zeroseven\CriticalCss\Model\Page::STATUS_ERROR,
+                        'icon' => 'overlay-warning'
+                    ]
                 ],
                 'readOnly' => true,
                 'default' => '0'
@@ -65,10 +65,20 @@ call_user_func(static function (string $table) {
                 'readOnly' => true,
                 'default' => ''
             ]
+        ],
+        'lazy_css' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_db.xlf:pages.lazy_css',
+            'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
+            'config' => [
+                'type' => 'text',
+                'readOnly' => true,
+                'default' => ''
+            ]
         ]
     ]);
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, --linebreak--, critical_css_status, --linebreak--, critical_css');
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, --linebreak--, critical_css_status, --linebreak--, critical_css, --linebreak--, lazy_css');
 
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes($table, '--palette--;Critical css;critical_css', '', 'after:tsconfig_includes');
 }, 'pages');
