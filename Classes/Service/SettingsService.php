@@ -11,7 +11,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SettingsService
 {
-    public const EXTENSION_KEY = 'z7_critical_css';
+    public const EXTENSION_KEY = 'critical_css';
 
     protected static function getExtensionConfiguration(string $key = ''): mixed
     {

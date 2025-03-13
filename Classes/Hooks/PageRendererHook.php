@@ -137,7 +137,7 @@ class PageRendererHook
             $params['cssFiles'] = '';
 
             // Add critical css inline into the head
-            $params['cssInline'] .= '<style>/*z7_critical_css*/' . $criticalCss . '</style>';
+            $params['cssInline'] .= '<style>/*critical_css*/' . $criticalCss . '</style>';
         }
     }
 
