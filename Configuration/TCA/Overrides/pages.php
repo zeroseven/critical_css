@@ -63,6 +63,7 @@ call_user_func(static function (string $table) {
             'config' => [
                 'type' => 'text',
                 'readOnly' => true,
+                'rows' => 5,
                 'default' => ''
             ]
         ],
@@ -73,6 +74,7 @@ call_user_func(static function (string $table) {
             'config' => [
                 'type' => 'text',
                 'readOnly' => true,
+                'rows' => 1,
                 'default' => ''
             ]
         ]

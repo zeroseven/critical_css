@@ -55,7 +55,7 @@ class DatabaseService
 
     public static function update(Page $page): void
     {
-        $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css'];
+        $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css_inline', 'critical_css_linked'];
 
         $queryBuilder = self::getQueryBuilder($page)->update(self::TABLE);
 
@@ -78,7 +78,8 @@ class DatabaseService
         self::getQueryBuilder()
             ->update(self::TABLE)
             ->set('critical_css_status', 0)
-            ->set('critical_css', '')
+            ->set('critical_css_inline', '')
+            ->set('critical_css_linked', '')
             ->executeStatement();
     }
 

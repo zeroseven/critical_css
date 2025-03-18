@@ -96,6 +96,7 @@ class PageRendererHook
             }
         }
 
+        // Collect additional styles
         $assetCollector = GeneralUtility::makeInstance(AssetCollector::class);
         $assets = $assetCollector->getStyleSheets();
         foreach ($assets as $asset) {
@@ -109,35 +110,15 @@ class PageRendererHook
         return count($styles) ? implode(LF, $styles) : null;
     }
 
-    protected function cssInlineToTemporaryFile(array &$params, PageRenderer $pageRenderer): void
-    {
-        $styles = '';
-
-        foreach ($params['cssInline'] ?? [] as $key => $value) {
-            if ($params['cssInline'][$key]['code'] ?? null) {
-                $styles .= '/* cssInline: ' . $key . ' */' . LF . $params['cssInline'][$key]['code'] . LF;
-                unset($params['cssInline'][$key]);
-            }
-        }
-
-        if ($styles) {
-            $path = GeneralUtility::writeStyleSheetContentToTemporaryFile($styles);
-            $pageRenderer->addCssFile($path, 'stylesheet', 'all', 'css inline styles', null, false, null, false);
-        }
-    }
-
     protected function renderCriticalCss(array &$params): void
     {
         if ($criticalCss = $this->page->getInlineStyles()) {
+            if ($linkedStyles = $this->page->getLinkedStyles()) {
+                $params['footerData'][] = '<link rel="stylesheet" href="' . $linkedStyles . '" media="all"/>';
+            }
 
-            // Move all css files to the footer
-            $params['footerData'][] = $params['cssFiles'];
-
-            // Remove styles
             $params['cssFiles'] = '';
-
-            // Add critical css inline into the head
-            $params['cssInline'] .= '<style>/*critical_css*/' . $criticalCss . '</style>';
+            $params['cssInline'] = '<style>/*critical css styles*/' . $criticalCss . '</style>';
         }
     }
 
@@ -147,10 +128,6 @@ class PageRendererHook
         if ($this->ready()) {
             if ($this->page->getStatus() === Page::STATUS_EXPIRED && $css = $this->collectCss($params)) {
                 RequestService::send($css, $this->page);
-            }
-
-            if ($this->page->getInlineStyles()) {
-                $this->cssInlineToTemporaryFile($params, $pageRenderer);
             }
         }
     }

@@ -15,7 +15,7 @@ use Zeroseven\CriticalCss\Model\Page;
 
 class RequestService
 {
-    protected const URL = 'https://ccss.zeroseven.de/custom/ccss/v1/generate';
+    protected const URL = 'http://sleepy-dusk-xckctxbyvt.ploi.team/api/v1/generate';
 
     protected static function getCallbackUrl(): string
     {
@@ -45,8 +45,8 @@ class RequestService
             GeneralUtility::makeInstance(GuzzleClientFactory::class)?->getClient()->send($request, ['body' => $css]);
             DatabaseService::updateStatus($page->setStatus(Page::STATUS_PENDING));
         } catch (GuzzleException $e) {
-            DatabaseService::updateStatus($page->setStatus(Page::STATUS_ERROR));
             LogService::systemError(sprintf("%s. HTTP headers: %s. Body: %sb", $e->getMessage(), json_encode(array_diff_key($request->getHeaders(), ['X-TOKEN' => false]), JSON_THROW_ON_ERROR), mb_strlen($css)));
+            DatabaseService::updateStatus($page->setStatus(Page::STATUS_ERROR));
         }
     }
 }
