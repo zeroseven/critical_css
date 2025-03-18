@@ -9,11 +9,11 @@
 			<trans-unit id="pages.critical_css_status">
 				<source>Status</source>
 			</trans-unit>
-			<trans-unit id="pages.critical_css">
+			<trans-unit id="pages.critical_css_inline">
 				<source>Critical CSS</source>
 			</trans-unit>
-			<trans-unit id="pages.lazy_css">
-				<source>Lazy CSS</source>
+			<trans-unit id="pages.critical_css_linked">
+				<source>Uncritical CSS</source>
 			</trans-unit>
 		</body>
 	</file>

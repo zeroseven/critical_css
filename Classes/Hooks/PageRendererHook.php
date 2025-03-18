@@ -128,7 +128,7 @@ class PageRendererHook
 
     protected function renderCriticalCss(array &$params): void
     {
-        if ($criticalCss = $this->page->getCss()) {
+        if ($criticalCss = $this->page->getInlineStyles()) {
 
             // Move all css files to the footer
             $params['footerData'][] = $params['cssFiles'];
@@ -149,7 +149,7 @@ class PageRendererHook
                 RequestService::send($css, $this->page);
             }
 
-            if ($this->page->getCss()) {
+            if ($this->page->getInlineStyles()) {
                 $this->cssInlineToTemporaryFile($params, $pageRenderer);
             }
         }

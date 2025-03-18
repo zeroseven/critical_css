@@ -56,9 +56,9 @@ call_user_func(static function (string $table) {
                 'default' => '0'
             ]
         ],
-        'critical_css' => [
+        'critical_css_inline' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css',
+            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_inline',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'text',
@@ -66,9 +66,9 @@ call_user_func(static function (string $table) {
                 'default' => ''
             ]
         ],
-        'lazy_css' => [
+        'critical_css_linked' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.lazy_css',
+            'label' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_db.xlf:pages.critical_css_linked',
             'displayCond' => 'FIELD:critical_css_disabled:REQ:false',
             'config' => [
                 'type' => 'text',
@@ -78,7 +78,6 @@ call_user_func(static function (string $table) {
         ]
     ]);
 
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, --linebreak--, critical_css_status, --linebreak--, critical_css, --linebreak--, lazy_css');
-
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette($table, 'critical_css', 'critical_css_disabled, --linebreak--, critical_css_status, --linebreak--, critical_css_inline, --linebreak--, critical_css_inline, --linebreak--, critical_css_linked');
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes($table, '--palette--;Critical css;critical_css', '', 'after:tsconfig_includes');
 }, 'pages');

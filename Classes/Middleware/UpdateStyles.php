@@ -71,7 +71,7 @@ class UpdateStyles implements MiddlewareInterface
                     ->setUid($pageUid)
                     ->setLanguage($pageLanguage)
                     ->setStatus(Page::STATUS_ACTUAL)
-                    ->setCss($criticalCss));
+                    ->setInlineStyles($criticalCss));
 
                 // Clear frontend cache
                 $this->clearFrontendCache($pageUid);
