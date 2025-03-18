@@ -161,4 +161,10 @@ class PageRendererHook
             $this->renderCriticalCss($params);
         }
     }
+
+    public static function register(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-postProcess'][SettingsService::EXTENSION_KEY] = static::class . '->postProcess';
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][SettingsService::EXTENSION_KEY] = static::class . '->preProcess';
+    }
 }

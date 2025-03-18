@@ -108,4 +108,9 @@ class DataHandlerHook
             DatabaseService::flushAll();
         }
     }
+
+    public static function register(): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][SettingsService::EXTENSION_KEY] = static::class . '->clearCachePostProc';
+    }
 }
