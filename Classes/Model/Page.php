@@ -7,7 +7,7 @@ namespace Zeroseven\CriticalCss\Model;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-class CriticalCss
+class Page
 {
     public const STATUS_EXPIRED = 0;
     public const STATUS_PENDING = 1;
@@ -16,11 +16,16 @@ class CriticalCss
 
     protected int $uid;
     protected ?int $language;
-    protected string $css;
     protected bool $disabled;
     protected int $status;
 
-    public function __construct(array $row = null)
+    // The critical css
+    protected ?string $inlineStyles;
+
+    // The uncritical css
+    protected ?string $linkedStyles;
+
+    public function __construct(?array $row = null)
     {
         if (empty($row) && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController) {
             $row = $GLOBALS['TSFE']->page;
@@ -28,12 +33,13 @@ class CriticalCss
 
         $this->uid = (int)($row['uid'] ?? 0);
         $this->language = isset($row['sys_language_uid']) ? (int)$row['sys_language_uid'] : null;
-        $this->css = (string)($row['critical_css'] ?? '');
         $this->disabled = (bool)($row['critical_css_disabled'] ?? false);
         $this->status = (int)($row['critical_css_status'] ?? 0);
+        $this->inlineStyles = (string)($row['critical_css_inline'] ?? '');
+        $this->linkedStyles = (string)($row['critical_css_linked'] ?? '');
     }
 
-    public static function makeInstance(array $row = null): self
+    public static function makeInstance(?array $row = null): self
     {
         return GeneralUtility::makeInstance(self::class, $row);
     }
@@ -41,9 +47,10 @@ class CriticalCss
     public function toArray(): array
     {
         return [
-            'critical_css' => $this->getCss(),
             'critical_css_disabled' => $this->isDisabled(),
-            'critical_css_status' => $this->getStatus()
+            'critical_css_status' => $this->getStatus(),
+            'critical_css_inline' => $this->getInlineStyles(),
+            'critical_css_linked' => $this->getLinkedStyles()
         ];
     }
 
@@ -63,20 +70,9 @@ class CriticalCss
         return $this->language;
     }
 
-    public function setLanguage(int $language = null): self
+    public function setLanguage(?int $language = null): self
     {
         $this->language = $language;
-        return $this;
-    }
-
-    public function getCss(): string
-    {
-        return $this->css;
-    }
-
-    public function setCss(string $css): self
-    {
-        $this->css = $css;
         return $this;
     }
 
@@ -110,6 +106,28 @@ class CriticalCss
     public function setStatus(int $status): self
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getInlineStyles(): ?string
+    {
+        return $this->inlineStyles;
+    }
+
+    public function setInlineStyles(string $css = null): self
+    {
+        $this->inlineStyles = $css;
+        return $this;
+    }
+
+    public function getLinkedStyles(): ?string
+    {
+        return $this->linkedStyles;
+    }
+
+    public function setLinkedStyles(string $css = null): self
+    {
+        $this->linkedStyles = $css;
         return $this;
     }
 }

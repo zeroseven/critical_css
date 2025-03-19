@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zeroseven\CriticalCss\Middleware;
 
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,7 +14,7 @@ use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheGroupException;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
-use Zeroseven\CriticalCss\Model\CriticalCss;
+use Zeroseven\CriticalCss\Model\Page;
 use Zeroseven\CriticalCss\Service\DatabaseService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
@@ -61,23 +62,34 @@ class UpdateStyles implements MiddlewareInterface
         if (($path = $request->getUri()->getPath()) && ($path === self::PATH || $path === self::PATH . '/' || $path === rtrim(self::PATH, '/'))) {
             if (
                 $this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken()
-                && ($criticalCss = (string)$request->getBody())
+                && ($body = (string)$request->getBody())
                 && ($pageUid = (int)$this->getHeader($request, 'X-PAGE-UID'))
             ) {
-                $pageLanguage = MathUtility::canBeInterpretedAsInteger($language = $this->getHeader($request, 'X-PAGE-LANGUAGE')) ? (int)$language : null;
+                try {
+                    $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
-                // Update database
-                DatabaseService::update(CriticalCss::makeInstance()
-                    ->setUid($pageUid)
-                    ->setLanguage($pageLanguage)
-                    ->setStatus(CriticalCss::STATUS_ACTUAL)
-                    ->setCss($criticalCss));
+                    if ($criticalCss = $data['criticalCss'] ?? null) {
+                        $pageLanguage = MathUtility::canBeInterpretedAsInteger($language = $this->getHeader($request, 'X-PAGE-LANGUAGE')) ? (int)$language : null;
+                        $linkedStyles = ($uncriticalStyles = $data['uncriticalCss'] ?? null)
+                            ? GeneralUtility::writeStyleSheetContentToTemporaryFile('\/*uncritical css styles*\/' . $uncriticalStyles)
+                            : '';
 
-                // Clear frontend cache
-                $this->clearFrontendCache($pageUid);
+                        // Update database
+                        DatabaseService::update(Page::makeInstance()
+                            ->setUid($pageUid)
+                            ->setLanguage($pageLanguage)
+                            ->setStatus(Page::STATUS_ACTUAL)
+                            ->setInlineStyles($criticalCss)
+                            ->setLinkedStyles($linkedStyles));
 
-                // Send response
-                return $this->sendJsonResponse(true);
+                        // Clear frontend cache
+                        $this->clearFrontendCache($pageUid);
+
+                        // Send response
+                        return $this->sendJsonResponse(true);
+                    }
+                } catch (JsonException) {
+                }
             }
 
             // Send response

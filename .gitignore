@@ -1,0 +1,51 @@
+# Composer
+/vendor/
+/composer.lock
+
+# TYPO3
+/public/
+/var/
+/temp/
+/.php_cs.cache
+/.php-cs-fixer.cache
+
+# IDE & Editor files
+/.idea/
+/.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+/node_modules/
+/build/
+/.build/
+/.sass-cache/
+*.log
+
+# TYPO3 specific
+/typo3conf/
+/typo3temp/
+/fileadmin/
+/uploads/
+/typo3/
+/index.php
+/typo3_src
+
+# Testing
+/.phpunit.result.cache
+/coverage/
+/phpunit.xml
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Misc
+*.bak
+*.cache
+*.zip
+*.tar
+*.gz

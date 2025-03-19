@@ -35,9 +35,9 @@ final class ModifyClearCacheActions
     {
         if (SettingsService::isEnabled() && ($this->isEnabled() || ($this->isAdmin() && $this->isEnabled(true)))) {
             $event->addCacheAction([
-                'id' => 'critical_css',
-                'title' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.title',
-                'description' => 'LLL:EXT:z7_critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.description',
+                'id' =>  self::CACHE_CMD,
+                'title' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.title',
+                'description' => 'LLL:EXT:critical_css/Resources/Private/Language/locallang_be.xlf:flushCache.description',
                 'href' => (string)GeneralUtility::makeInstance(UriBuilder::class)?->buildUriFromRoute('tce_db', ['cacheCmd' => self::CACHE_CMD]),
                 'iconIdentifier' => 'apps-toolbar-menu-cache',
             ]);
