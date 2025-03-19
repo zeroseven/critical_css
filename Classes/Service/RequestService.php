@@ -15,7 +15,7 @@ use Zeroseven\CriticalCss\Model\Page;
 
 class RequestService
 {
-    protected const URL = 'http://sleepy-dusk-xckctxbyvt.ploi.team/api/v1/generate';
+    protected const URL = 'http://sleepy-dusk-xckctxbyvt.ploi.team/api/v2/generate';
 
     protected static function getCallbackUrl(): string
     {

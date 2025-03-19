@@ -113,12 +113,12 @@ class PageRendererHook
     protected function renderCriticalCss(array &$params): void
     {
         if ($criticalCss = $this->page->getInlineStyles()) {
+            $params['cssFiles'] = '';
+            $params['cssInline'] = '<style>/*critical css styles*/' . $criticalCss . '</style>';
+
             if ($linkedStyles = $this->page->getLinkedStyles()) {
                 $params['footerData'][] = '<link rel="stylesheet" href="' . $linkedStyles . '" media="all"/>';
             }
-
-            $params['cssFiles'] = '';
-            $params['cssInline'] = '<style>/*critical css styles*/' . $criticalCss . '</style>';
         }
     }
 
