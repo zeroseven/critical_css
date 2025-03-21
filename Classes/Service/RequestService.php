@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use Zeroseven\CriticalCss\Middleware\UpdateStyles;
@@ -30,6 +31,19 @@ class RequestService
         return GeneralUtility::makeInstance(UriBuilder::class)?->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($page->getUid())->build();
     }
 
+    protected static function getVersion(): string
+    {
+        $_EXTKEY = SettingsService::getExtensionKey();
+
+        if (($path = ExtensionManagementUtility::extPath($_EXTKEY, 'ext_emconf.php')) && file_exists($path)) {
+            include $path;
+
+            return $EM_CONF[$_EXTKEY]['version'] ?? '';
+        }
+
+        return '';
+    }
+
     /** @throws \JsonException */
     public static function send(string $css, Page $page): void
     {
@@ -40,6 +54,7 @@ class RequestService
             ->withHeader('X-AUTH-PASSWORD', SettingsService::getBasicAuthPassword())
             ->withHeader('X-URL', self::getPageUrl($page))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
+            ->withHeader('X-VERSION', self::getVersion())
             ->withHeader('X-PAGE-UID', (string)$page->getUid())
             ->withHeader('X-PAGE-LANGUAGE', (string)$page->getLanguage());
 
