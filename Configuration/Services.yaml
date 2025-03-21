@@ -10,9 +10,15 @@ services:
   Zeroseven\CriticalCss\EventListener\ModifyClearCacheActions:
     tags:
       - name: event.listener
-        identifier: 'zeroseven/z7-critical-css/modify-clear-cache-actions'
+        identifier: 'zeroseven/critical-css/modify-clear-cache-action'
         method: __invoke
         event: TYPO3\CMS\Backend\Backend\Event\ModifyClearCacheActionsEvent
+
+  Zeroseven\CriticalCss\Command\FlushCommand:
+    tags:
+      - name: console.command
+        command: 'critical_css:flush'
+        description: 'Flushes the critical styles.'
 
   dashboard.widget.criticalCssStatus:
     class: 'TYPO3\CMS\Dashboard\Widgets\DoughnutChartWidget'

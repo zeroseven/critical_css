@@ -8,7 +8,7 @@ If you change or move any content element, or update the page properties, the cr
 
 ## Installation and setup
 
-1. Get this extension via `composer req zeroseven/z7-critical-css`
+1. Get this extension via `composer req zeroseven/critical-css`
 2. Login to the [admin panel](https://ccss.zeroseven.de/admin/collections/) and generate a token.
 3. Store the authentication token via the extension configuration in TYPO3 settings module.
 
@@ -18,16 +18,18 @@ If you need to recalculate the critical css on all pages, for example because yo
 
 ![Flush critical css](Documentation/Images/flush_cache.png "Flush critical css")
 
-This function can also be called via a database service class:
-
-```php
-\Zeroseven\CriticalCss\Service\DatabaseService::flushAll();
-```
-
 There are good reasons why "no admins" in TYPO3 shouldn't have this cache button. If they insist on needing it (they don't) then you can set the following option (you won't) in TSconfig:
 
-```typo3_typoscript
+```
 options.clearCache.criticalCss = 1
+```
+
+### Flush command:
+
+This function can also be called via a TYPO3 command:
+
+```
+vendor/bin/typo3 critical_css:flush
 ```
 
 ## Monitoring
