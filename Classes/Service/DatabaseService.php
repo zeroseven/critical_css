@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Zeroseven\CriticalCss\Service;
 
-use Doctrine\DBAL\Exception;
+use Exception;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception\InvalidFieldNameException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -48,11 +49,6 @@ class DatabaseService
         return $queryBuilder;
     }
 
-    protected static function log(\Exception $exception): void
-    {
-        LogService::systemError($exception->getMessage() . ' (' . self::class . ': ' . debug_backtrace()[1]['function'] . ')');
-    }
-
     public static function update(Page $page): void
     {
         $allowedFields = ['critical_css_disabled', 'critical_css_status', 'critical_css_inline', 'critical_css_linked'];
@@ -83,7 +79,7 @@ class DatabaseService
             ->executeStatement();
     }
 
-    /** @throws Exception */
+    /** @throws DBALException */
     public static function countStatus(): array
     {
         try {
@@ -118,8 +114,8 @@ class DatabaseService
             }
 
             return $data;
-        } catch (InvalidFieldNameException $exception) {
-            self::log($exception);
+        } catch (InvalidFieldNameException $e) {
+            LogService::systemError($e->getMessage() . ' (' . self::class . ': ' . debug_backtrace()[1]['function'] . ')');
 
             return [];
         }
