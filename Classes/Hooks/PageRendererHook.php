@@ -6,9 +6,9 @@ namespace Zeroseven\CriticalCss\Hooks;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Domain\ConsumableString;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Page\AssetCollector;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -54,6 +54,16 @@ class PageRendererHook
 
             // An authentication key is configured
             && SettingsService::getAuthenticationToken();
+    }
+
+    protected function getNonce(): ?string
+    {
+        return ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
+            && ($nonceAttribute = $GLOBALS['TYPO3_REQUEST']->getAttribute('nonce'))
+            && ($nonceAttribute instanceof ConsumableString)
+                ? $nonceAttribute->consume()
+                : null;
+
     }
 
     protected function getAbsoluteFilePath(string $path): ?string
@@ -113,8 +123,10 @@ class PageRendererHook
     protected function renderCriticalCss(array &$params): void
     {
         if ($criticalCss = $this->page->getInlineStyles()) {
+            $nonceAttribute = $nonce = $this->getNonce() ? ' nonce="' . $this->getNonce() . '"' : '';
+
             $params['cssFiles'] = '';
-            $params['cssInline'] = '<style>/*critical css styles*/' . $criticalCss . '</style>';
+            $params['cssInline'] = '<style' . $nonceAttribute . '>/*critical css styles*/' . $criticalCss . '</style>';
 
             if ($linkedStyles = $this->page->getLinkedStyles()) {
                 $params['footerData'][] = '<link rel="stylesheet" href="' . $linkedStyles . '" media="all"/>';
@@ -123,7 +135,7 @@ class PageRendererHook
     }
 
     /** @throws \JsonException */
-    public function preProcess(array &$params, PageRenderer $pageRenderer): void
+    public function preProcess(array &$params): void
     {
         if ($this->ready()) {
             if ($this->page->getStatus() === Page::STATUS_EXPIRED && $css = $this->collectCss($params)) {
