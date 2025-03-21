@@ -1,6 +1,10 @@
 # cat=configuration/100; type=string; label=Authentication key:Add a key for access to the server.
 authenticationToken =
-# cat=configuration/200; type=boolean; label=Disable critical css:for example while developing on your local computer.
+# cat=configuration/200; type=boolean; label=Disable critical css:For example while developing on your local computer.
 disable =
 # cat=configuration/300; type=string; label=Allowed types:Regex pattern of allowed media types
 allowedMediaTypes = /^((.*(only|\,)\s+)?(all|screen)((\s|\,).*)?)?$/i
+# cat=configuration/400; type=string; label=Auth Username:If your website is protected by basic authentication, you need to enter the username for the callback here.
+basicAuthUsername =
+# cat=configuration/500; type=string; label=Auth Passwort:If your website is protected by basic authentication, you need to enter the passwort for the callback here. NOTE: The password will not be stored.
+basicAuthPassword =

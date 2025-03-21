@@ -36,6 +36,8 @@ class RequestService
         $request = GeneralUtility::makeInstance(RequestFactory::class)?->createRequest('post', self::URL)
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('X-TOKEN', SettingsService::getAuthenticationToken())
+            ->withHeader('X-AUTH-USER', SettingsService::getBasicAuthUsername())
+            ->withHeader('X-AUTH-PASSWORD', SettingsService::getBasicAuthPassword())
             ->withHeader('X-URL', self::getPageUrl($page))
             ->withHeader('X-CALLBACK', self::getCallbackUrl())
             ->withHeader('X-PAGE-UID', (string)$page->getUid())

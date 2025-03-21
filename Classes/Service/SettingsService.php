@@ -24,9 +24,29 @@ class SettingsService
         return null;
     }
 
+    public static function getExtensionKey(): string
+    {
+        return self::EXTENSION_KEY;
+    }
+
     public static function getAuthenticationToken(): string
     {
-        return self::getExtensionConfiguration('authenticationToken');
+        return (string)self::getExtensionConfiguration('authenticationToken');
+    }
+
+    public static function getAllowedMediaTypes(): string
+    {
+        return (string)self::getExtensionConfiguration('allowedMediaTypes');
+    }
+
+    public static function getBasicAuthUsername(): string
+    {
+        return (string)self::getExtensionConfiguration('basicAuthUsername');
+    }
+
+    public static function getBasicAuthPassword(): string
+    {
+        return (string)self::getExtensionConfiguration('basicAuthPassword');
     }
 
     public static function isDisabled(): bool
@@ -37,10 +57,5 @@ class SettingsService
     public static function isEnabled(): bool
     {
         return !self::isDisabled();
-    }
-
-    public static function getAllowedMediaTypes(): string
-    {
-        return self::getExtensionConfiguration('allowedMediaTypes');
     }
 }

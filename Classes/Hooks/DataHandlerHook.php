@@ -111,6 +111,6 @@ class DataHandlerHook
 
     public static function register(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][SettingsService::EXTENSION_KEY] = static::class . '->clearCachePostProc';
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc'][SettingsService::getExtensionKey()] = static::class . '->clearCachePostProc';
     }
 }

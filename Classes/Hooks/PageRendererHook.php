@@ -141,7 +141,9 @@ class PageRendererHook
 
     public static function register(): void
     {
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-postProcess'][SettingsService::EXTENSION_KEY] = static::class . '->postProcess';
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][SettingsService::EXTENSION_KEY] = static::class . '->preProcess';
+        $extenionKey = SettingsService::getExtensionKey();
+
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-postProcess'][$extenionKey] = static::class . '->postProcess';
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][$extenionKey] = static::class . '->preProcess';
     }
 }
