@@ -12,6 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheGroupException;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use Zeroseven\CriticalCss\Model\Page;
@@ -20,7 +21,17 @@ use Zeroseven\CriticalCss\Service\SettingsService;
 
 class UpdateStyles implements MiddlewareInterface
 {
-    public const PATH = '/-/critical_css/update/';
+    public const URL_PARAMETER = 'critical_css';
+    public const URL_VALUE = 'update';
+
+    public static function createUrl(): string
+    {
+        return (string)GeneralUtility::makeInstance(Uri::class)
+            ?->withScheme(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
+            ->withHost($_SERVER['HTTP_HOST'] ?? '')
+            ->withPath('/')
+            ->withQuery(self::URL_PARAMETER . '=' . self::URL_VALUE);
+    }
 
     protected function clearFrontendCache(int $pageUid): void
     {
@@ -59,7 +70,7 @@ class UpdateStyles implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (($path = $request->getUri()->getPath()) && ($path === self::PATH || $path === self::PATH . '/' || $path === rtrim(self::PATH, '/'))) {
+        if (!trim($request->getUri()->getPath(), '/') && $request->getUri()->getQuery() === self::URL_PARAMETER . '=' . self::URL_VALUE) {
             if (
                 $this->getHeader($request, 'X-TOKEN') === SettingsService::getAuthenticationToken()
                 && ($body = (string)$request->getBody())

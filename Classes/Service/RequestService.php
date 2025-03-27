@@ -7,7 +7,6 @@ namespace Zeroseven\CriticalCss\Service;
 use GuzzleHttp\Exception\GuzzleException;
 use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
-use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
@@ -17,14 +16,6 @@ use Zeroseven\CriticalCss\Model\Page;
 class RequestService
 {
     protected const URL = 'http://sleepy-dusk-xckctxbyvt.ploi.team/api/v2/generate';
-
-    protected static function getCallbackUrl(): string
-    {
-        return (string)GeneralUtility::makeInstance(Uri::class)
-            ?->withScheme(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-            ->withHost($_SERVER['HTTP_HOST'] ?? '')
-            ->withPath(UpdateStyles::PATH);
-    }
 
     protected static function getPageUrl(Page $page): string
     {
@@ -53,7 +44,7 @@ class RequestService
             ->withHeader('X-AUTH-USER', SettingsService::getBasicAuthUsername())
             ->withHeader('X-AUTH-PASSWORD', SettingsService::getBasicAuthPassword())
             ->withHeader('X-URL', self::getPageUrl($page))
-            ->withHeader('X-CALLBACK', self::getCallbackUrl())
+            ->withHeader('X-CALLBACK', UpdateStyles::createUrl())
             ->withHeader('X-VERSION', self::getVersion())
             ->withHeader('X-PAGE-UID', (string)$page->getUid())
             ->withHeader('X-PAGE-LANGUAGE', (string)$page->getLanguage());
