@@ -29,23 +29,37 @@ class PageRendererHook
         $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
     }
 
+    protected function getRequest(): ?ServerRequestInterface
+    {
+        return ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
+            ? $GLOBALS['TYPO3_REQUEST']
+            : null;
+    }
+
+    protected function getTypoScriptFrontendController(): ?TypoScriptFrontendController
+    {
+        return ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
+            ? $GLOBALS['TSFE']
+            : null;
+    }
+
     protected function isRequiered(): bool
     {
         return
 
             // Access to global parameters
-            ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
-            && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
+            ($request = $this->getRequest())
+            && ($typoScriptFrontendController = $this->getTypoScriptFrontendController())
 
             // Check application type
-            && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
+            && ApplicationType::fromRequest($request)->isFrontend()
 
             // No frontend user or backend user logged in
-            && empty($GLOBALS['TSFE']->fe_user->user)
+            && empty($typoScriptFrontendController->fe_user->user)
             && empty($GLOBALS['BE_USER'])
 
             // Check for default page type
-            && (int)$GLOBALS['TSFE']->type === 0
+            && (int)$typoScriptFrontendController->type === 0
 
             // The page is not disabled for critical styles
             && $this->page->isEnabled()
@@ -60,13 +74,12 @@ class PageRendererHook
             && SettingsService::getAuthenticationToken()
 
             // Register your own event
-            && $this->eventDispatcher->dispatch(new CriticalCssRequierdEvent($GLOBALS['TYPO3_REQUEST'], $GLOBALS['TSFE']))->isRequiered();
+            && $this->eventDispatcher->dispatch(new CriticalCssRequierdEvent($request, $typoScriptFrontendController))->isRequiered();
     }
 
     protected function getNonce(): ?string
     {
-        return ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
-            && ($nonceAttribute = $GLOBALS['TYPO3_REQUEST']->getAttribute('nonce'))
+        return ($nonceAttribute = $this->getRequest()?->getAttribute('nonce'))
             && ($nonceAttribute instanceof ConsumableString)
                 ? $nonceAttribute->consume()
                 : null;
