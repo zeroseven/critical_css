@@ -12,36 +12,54 @@ use TYPO3\CMS\Core\Page\AssetCollector;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use Zeroseven\CriticalCss\Model\Page;
+use Zeroseven\CriticalCss\Event\CriticalCssRequierdEvent;
 use Zeroseven\CriticalCss\Service\RequestService;
 use Zeroseven\CriticalCss\Service\SettingsService;
 
 class PageRendererHook
 {
     protected Page $page;
+    protected EventDispatcher $eventDispatcher;
 
     public function __construct()
     {
         $this->page = Page::makeInstance();
+        $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcher::class);
     }
 
-    protected function ready(): bool
+    protected function getRequest(): ?ServerRequestInterface
+    {
+        return ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
+            ? $GLOBALS['TYPO3_REQUEST']
+            : null;
+    }
+
+    protected function getTypoScriptFrontendController(): ?TypoScriptFrontendController
+    {
+        return ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
+            ? $GLOBALS['TSFE']
+            : null;
+    }
+
+    protected function isRequiered(): bool
     {
         return
 
             // Access to global parameters
-            ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
-            && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
+            ($request = $this->getRequest())
+            && ($typoScriptFrontendController = $this->getTypoScriptFrontendController())
 
             // Check application type
-            && ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()
+            && ApplicationType::fromRequest($request)->isFrontend()
 
             // No frontend user or backend user logged in
-            && empty($GLOBALS['TSFE']->fe_user->user)
+            && empty($typoScriptFrontendController->fe_user->user)
             && empty($GLOBALS['BE_USER'])
 
             // Check for default page type
-            && (int)$GLOBALS['TSFE']->type === 0
+            && (int)$typoScriptFrontendController->type === 0
 
             // The page is not disabled for critical styles
             && $this->page->isEnabled()
@@ -53,17 +71,18 @@ class PageRendererHook
             && SettingsService::isEnabled()
 
             // An authentication key is configured
-            && SettingsService::getAuthenticationToken();
+            && SettingsService::getAuthenticationToken()
+
+            // Register your own event
+            && $this->eventDispatcher->dispatch(new CriticalCssRequierdEvent($request, $typoScriptFrontendController))->isRequiered();
     }
 
     protected function getNonce(): ?string
     {
-        return ($GLOBALS['TYPO3_REQUEST'] ?? null) instanceof ServerRequestInterface
-            && ($nonceAttribute = $GLOBALS['TYPO3_REQUEST']->getAttribute('nonce'))
+        return ($nonceAttribute = $this->getRequest()?->getAttribute('nonce'))
             && ($nonceAttribute instanceof ConsumableString)
                 ? $nonceAttribute->consume()
                 : null;
-
     }
 
     protected function getAbsoluteFilePath(string $path): ?string
@@ -90,7 +109,7 @@ class PageRendererHook
         // Collect included files
         foreach ($params['cssFiles'] ?? [] as $cssFile) {
             if (
-                empty($cssFile['allWrap'] ?? null)
+                empty($cssFile['allWrap'])
                 && preg_match(SettingsService::getAllowedMediaTypes(), $cssFile['media'])
                 && ($file = $this->getAbsoluteFilePath($cssFile['file'] ?? null))
                 && $content = file_get_contents($file)
@@ -137,7 +156,7 @@ class PageRendererHook
     /** @throws \JsonException */
     public function preProcess(array &$params): void
     {
-        if ($this->ready()) {
+        if ($this->isRequiered()) {
             if ($this->page->getStatus() === Page::STATUS_EXPIRED && $css = $this->collectCss($params)) {
                 RequestService::send($css, $this->page);
             }
@@ -146,7 +165,7 @@ class PageRendererHook
 
     public function postProcess(array &$params): void
     {
-        if ($this->ready()) {
+        if ($this->isRequiered()) {
             $this->renderCriticalCss($params);
         }
     }

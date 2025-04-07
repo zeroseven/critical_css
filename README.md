@@ -56,6 +56,39 @@ The critical css is stored in the database for each TYPO3 page.
 Unfortunately, extensions like the good old "news" extension, for example, offers one page for many records.
 For such "detail" pages you have to deactivate the service manually using the nicely styled button inside the page properties in the backend.
 
-## TODO's:
+**TODO:** Create a Wikipedia article for "TRBDPP". LOL
 
-* Create a Wikipedia article for "TRBDPP". LOL
+## PSR-14 Events
+
+### Register event listener
+
+You can modify the behavior of the critical CSS generation by listening to PSR-14 events. To register your event listener, add the following configuration to your `Configuration/Services.yaml`:
+
+```yaml
+services:
+  Vendor\MyExtension\Event\MyCriticalCssEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'myextension/critical-css'
+        event: Zeroseven\CriticalCss\Event\CriticalCssRequierdEvent
+```
+
+`my_extensin/Classses/Event/CriticalCssEventListener.php`:
+
+```php
+....
+
+use Zeroseven\CriticalCss\Event\CriticalCssRequierdEvent;
+
+class CriticalCssEventListener
+{
+    public function __invoke(CriticalCssRequierdEvent $event): CriticalCssRequierdEvent
+    {
+        if ($event->getRequest()->hasHeader('X-SKIP-CRITICAL-CSS')) {
+            $event->setRequiered(false);
+        }
+
+        return $event;
+    }
+}
+```
