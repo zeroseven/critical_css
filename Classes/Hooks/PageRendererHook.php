@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Zeroseven\CriticalCss\Hooks;
 
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Domain\ConsumableString;
 use TYPO3\CMS\Core\Http\ApplicationType;
@@ -36,30 +37,24 @@ class PageRendererHook
             : null;
     }
 
-    protected function getTypoScriptFrontendController(): ?TypoScriptFrontendController
-    {
-        return ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
-            ? $GLOBALS['TSFE']
-            : null;
-    }
-
     protected function isRequiered(): bool
     {
         return
 
             // Access to global parameters
             ($request = $this->getRequest())
-            && ($typoScriptFrontendController = $this->getTypoScriptFrontendController())
+            && ($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController
 
             // Check application type
             && ApplicationType::fromRequest($request)->isFrontend()
 
             // No frontend user or backend user logged in
-            && empty($typoScriptFrontendController->fe_user->user)
-            && empty($GLOBALS['BE_USER'])
+            && ($context = GeneralUtility::makeInstance(Context::class))
+            && $context->getPropertyFromAspect('frontend.user', 'isLoggedIn') === false
+            && $context->getPropertyFromAspect('backend.user', 'isLoggedIn') === false
 
             // Check for default page type
-            && (int)$typoScriptFrontendController->type === 0
+            && (int)$request->getAttribute('routing')->getPageType() === 0
 
             // The page is not disabled for critical styles
             && $this->page->isEnabled()
@@ -74,7 +69,7 @@ class PageRendererHook
             && SettingsService::getAuthenticationToken()
 
             // Register your own event
-            && $this->eventDispatcher->dispatch(new CriticalCssRequierdEvent($request, $typoScriptFrontendController))->isRequiered();
+            && $this->eventDispatcher->dispatch(new CriticalCssRequierdEvent($request, $GLOBALS['TSFE']))->isRequiered();
     }
 
     protected function getNonce(): ?string
