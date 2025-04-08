@@ -9,7 +9,7 @@ use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use Zeroseven\CriticalCss\Middleware\UpdateStyles;
 use Zeroseven\CriticalCss\Model\Page;
 
@@ -19,7 +19,9 @@ class RequestService
 
     protected static function getPageUrl(Page $page): string
     {
-        return GeneralUtility::makeInstance(UriBuilder::class)?->reset()->setCreateAbsoluteUri(true)->setTargetPageUid($page->getUid())->build();
+        $cObj = GeneralUtility::makeInstance(className: ContentObjectRenderer::class);
+
+        return $cObj->typoLink_URL(['parameter' => $page->getUid(), 'forceAbsoluteUrl' => true]);
     }
 
     protected static function getVersion(): string
