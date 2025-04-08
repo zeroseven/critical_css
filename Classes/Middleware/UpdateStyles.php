@@ -82,7 +82,7 @@ class UpdateStyles implements MiddlewareInterface
                     if ($criticalCss = $data['criticalCss'] ?? null) {
                         $pageLanguage = MathUtility::canBeInterpretedAsInteger($language = $this->getHeader($request, 'X-PAGE-LANGUAGE')) ? (int)$language : null;
                         $linkedStyles = ($uncriticalStyles = $data['uncriticalCss'] ?? null)
-                            ? GeneralUtility::writeStyleSheetContentToTemporaryFile('\/*uncritical css styles*\/' . $uncriticalStyles)
+                            ? GeneralUtility::writeStyleSheetContentToTemporaryFile($uncriticalStyles)
                             : '';
 
                         // Update database
