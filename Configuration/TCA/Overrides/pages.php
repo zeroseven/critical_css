@@ -13,12 +13,11 @@ call_user_func(static function (string $table) {
                 'renderType' => 'checkboxLabeledToggle',
                 'items' => [
                     [
-                        0 => '',
-                        1 => '',
+                        'label' => '',
                         'labelChecked' => 'Enabled',
                         'labelUnchecked' => 'Disabled',
                         'invertStateDisplay' => true,
-                    ],
+                    ]
                 ],
                 'default' => '0'
             ]

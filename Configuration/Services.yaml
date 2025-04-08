@@ -23,7 +23,6 @@ services:
   dashboard.widget.criticalCssStatus:
     class: 'TYPO3\CMS\Dashboard\Widgets\DoughnutChartWidget'
     arguments:
-      $view: '@dashboard.views.widget'
       $dataProvider: '@Zeroseven\CriticalCss\Widgets\Provider\StatusDataProvider'
     tags:
       - name: dashboard.widget
@@ -33,6 +32,3 @@ services:
         description: 'LLL:EXT:critical_css/Resources/Private/Language/locallang_be.xlf:widget.criticalCssStatus.description'
         iconIdentifier: 'content-widget-chart-pie'
         height: 'medium'
-
-
-

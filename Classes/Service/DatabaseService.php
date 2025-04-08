@@ -101,8 +101,7 @@ class DatabaseService
                     PageRepository::DOKTYPE_BE_USER_SECTION,
                     PageRepository::DOKTYPE_MOUNTPOINT,
                     PageRepository::DOKTYPE_SPACER,
-                    PageRepository::DOKTYPE_SYSFOLDER,
-                    PageRepository::DOKTYPE_RECYCLER
+                    PageRepository::DOKTYPE_SYSFOLDER
                 ]))
                 ->orderBy('critical_css_status')
                 ->groupBy('critical_css_status')
