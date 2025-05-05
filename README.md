@@ -9,8 +9,8 @@ If you change or move any content element, or update the page properties, the cr
 ## Installation and setup
 
 1. Get this extension via `composer req zeroseven/critical-css`
-2. Login to the [admin panel](https://ccss.zeroseven.de/admin/collections/) and generate a token.
-3. Store the authentication token via the extension configuration in TYPO3 settings module.
+2. Get a [free token here](https://www.zeroseven.de/critical-css)
+3. Store the token via the extension configuration in TYPO3 settings module
 
 ## Flush critical css
 
