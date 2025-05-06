@@ -33,9 +33,6 @@
       "Zeroseven\\CriticalCss\\": "Classes"
     }
   },
-  "replace": {
-    "zeroseven/critical-css": "self.version"
-  },
   "extra": {
     "typo3/cms": {
       "extension-key": "critical_css"
